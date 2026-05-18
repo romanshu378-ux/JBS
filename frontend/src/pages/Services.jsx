@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Factory, Zap, Droplets, HardHat, Building2, Sun } from 'lucide-react';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 
 const iconMap = {
   'Droplets': <Droplets size={40} />,
@@ -44,7 +44,7 @@ const Services = () => {
             {services.map((service) => (
               <div key={service.id} className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 {service.image ? (
-                  <img src={`http://localhost:5000${service.image}`} alt={service.title} className="w-full h-48 object-cover rounded-md mb-6" />
+                  <img src={service.image ? `${BASE_URL}${service.image.replace(/\\/g, '/')}` : ''} alt={service.title} className="w-full h-48 object-cover rounded-md mb-6" />
                 ) : (
                   <div className="text-corporateGold mb-6">{iconMap[service.icon] || <HardHat size={40} />}</div>
                 )}

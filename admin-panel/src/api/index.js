@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+export const BASE_URL = import.meta.env.VITE_API_URL || 'https://jbs-pazg.onrender.com';
+
 const API = axios.create({
-  baseURL: 'https://jbs-pazg.onrender.com/api',
+  baseURL: `${BASE_URL}/api`,
 });
 
 // Interceptor to add JWT token

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Users, Edit, Trash2, Plus, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -30,7 +30,6 @@ const ManageTeam = () => {
   const toast = useToast();
 
   // LIVE BACKEND URL
-  const BASE_URL = 'https://jbs-pazg.onrender.com';
 
   // IMAGE URL FIX
   const imgSrc = (path) => {

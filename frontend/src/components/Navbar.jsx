@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -57,7 +57,7 @@ const Navbar = () => {
         <div className="container mx-auto px-4 flex justify-between items-center">
           <Link to="/" className="flex items-center">
             {settings?.logo ? (
-              <img src={`http://localhost:5000${settings.logo}`} alt="Logo" className="h-10 object-contain" />
+              <img src={settings?.logo ? `${BASE_URL}${settings.logo.replace(/\\/g, '/')}` : ''} alt="Logo" className="h-10 object-contain" />
             ) : (
               <div className="flex flex-col">
                 <span className="text-2xl font-heading font-bold text-corporateBlue leading-tight">{settings?.company_name || 'Janki Ballabh'}</span>

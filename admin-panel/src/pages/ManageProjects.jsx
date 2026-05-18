@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Folders, Edit, Trash2, Plus, Upload, Calendar, User } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -19,8 +19,7 @@ const ManageProjects = () => {
   const fileInputRef = useRef(null);
   const toast = useToast();
 
-  const BASE_URL = 'http://localhost:5000';
-  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path}`);
+  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path.replace(/\\/g, '/')}`);
   const FALLBACK = 'https://images.unsplash.com/photo-1541888081691-23a7bb7d5d85?auto=format&fit=crop&w=400&q=60';
 
   const fetchProjects = async () => {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Image as ImageIcon, Edit, Trash2, Plus, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -19,8 +19,7 @@ const ManageGallery = () => {
   const fileInputRef = useRef(null);
   const toast = useToast();
 
-  const BASE_URL = 'http://localhost:5000';
-  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path}`);
+  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path.replace(/\\/g, '/')}`);
 
   const fetchImages = async () => {
     try {

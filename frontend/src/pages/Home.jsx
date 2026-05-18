@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 
 const iconMap = {
   'Droplets': <Droplets size={32} />,
@@ -142,7 +142,7 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map((item) => (
                 <div key={item.id} className="group relative overflow-hidden rounded-lg shadow-sm cursor-pointer h-64">
-                  <img src={`http://localhost:5000${item.image}`} alt={item.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                  <img src={item.image ? `${BASE_URL}${item.image.replace(/\\/g, '/')}` : ''} alt={item.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-corporateBlue/90 via-corporateBlue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                     <span className="text-corporateGold font-semibold text-sm mb-1">{item.category}</span>
                     <h3 className="text-white font-bold text-xl">{item.title}</h3>
@@ -215,7 +215,7 @@ const Home = () => {
                   <p className="text-slate-600 italic mb-6 relative z-10">"{testi.content}"</p>
                   <div className="flex items-center">
                     {testi.image ? (
-                      <img src={`http://localhost:5000${testi.image}`} alt={testi.clientName} className="w-12 h-12 rounded-full object-cover mr-4" />
+                      <img src={testi.image ? `${BASE_URL}${testi.image.replace(/\\/g, '/')}` : ''} alt={testi.clientName} className="w-12 h-12 rounded-full object-cover mr-4" />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-corporateBlue/10 flex items-center justify-center text-corporateBlue font-bold mr-4">
                         {testi.clientName.charAt(0)}

@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import API from '../api';
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      await API.post('/inquiries', formData);
       alert('Thank you for your inquiry. We will get back to you shortly.');
-      setIsSubmitting(false);
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    }, 1500);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to submit inquiry. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
