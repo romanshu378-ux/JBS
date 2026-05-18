@@ -53,12 +53,23 @@ const startServer = async () => {
   try {
     // Create database if it doesn't exist
     const mysql = require('mysql2/promise');
+
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
+      port: process.env.DB_PORT,
+
+      ssl: {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: false,
+      },
     });
-    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
+
+    await connection.query(
+      `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`
+    );
+
     await connection.end();
 
     console.log('Database checked/created successfully.');
@@ -67,9 +78,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('MySQL connected via Sequelize.');
 
-    // Sync Models (Create tables)
-    // using alter: true to update schema if models change
-    await sequelize.sync({ alter: true }); 
+    // Sync Models
+    await sequelize.sync({ alter: true });
     console.log('All models were synchronized successfully.');
 
     // Seed Data
@@ -79,6 +89,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+
   } catch (error) {
     console.error('Unable to connect to the database:', error);
     process.exit(1);
