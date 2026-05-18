@@ -2,69 +2,59 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// FULL ABSOLUTE UPLOADS PATH
-const uploadDir = path.join(__dirname, '..', 'uploads');
+const uploadPath = path.join(__dirname, '..', 'uploads');
 
-// CREATE FOLDER IF NOT EXISTS
-if (!fs.existsSync(uploadDir)) {
-
-  fs.mkdirSync(uploadDir, { recursive: true });
-
+// Create uploads folder
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
 }
 
-// STORAGE CONFIG
 const storage = multer.diskStorage({
 
-  destination(req, file, cb) {
+  destination: function (req, file, cb) {
 
-    cb(null, uploadDir);
+    cb(null, uploadPath);
 
   },
 
-  filename(req, file, cb) {
+  filename: function (req, file, cb) {
 
-    cb(
-      null,
-      `${Date.now()}-${file.originalname.replace(/\s+/g, '-')}`
-    );
+    const uniqueName =
+      Date.now() + path.extname(file.originalname);
+
+    cb(null, uniqueName);
 
   },
 
 });
 
-// FILE TYPE CHECK
-const checkFileType = (file, cb) => {
+const fileFilter = (req, file, cb) => {
 
-  const filetypes = /jpg|jpeg|png|webp|svg/;
+  const allowed = /jpg|jpeg|png|webp/;
 
-  const extname = filetypes.test(
+  const ext = allowed.test(
     path.extname(file.originalname).toLowerCase()
   );
 
-  const mimetype = filetypes.test(file.mimetype);
+  const mime = allowed.test(file.mimetype);
 
-  if (extname && mimetype) {
+  if (ext && mime) {
 
-    return cb(null, true);
+    cb(null, true);
 
   } else {
 
-    cb(new Error('Images only!'));
+    cb(new Error('Only Images Allowed'));
 
   }
 
 };
 
-// MULTER CONFIG
 const upload = multer({
 
   storage,
 
-  fileFilter(req, file, cb) {
-
-    checkFileType(file, cb);
-
-  },
+  fileFilter,
 
 });
 
