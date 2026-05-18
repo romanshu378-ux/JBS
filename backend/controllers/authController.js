@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const { Admin } = require('../models');
 
 const generateToken = (id) => {
@@ -9,8 +10,11 @@ const generateToken = (id) => {
 
 const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
+
   try {
-    const admin = await Admin.findOne({ where: { username } });
+    const admin = await Admin.findOne({
+      where: { username },
+    });
 
     if (admin && (await admin.matchPassword(password))) {
       res.json({
@@ -20,33 +24,69 @@ const loginAdmin = async (req, res) => {
         token: generateToken(admin.id),
       });
     } else {
-      res.status(401).json({ success: false, message: 'Invalid username or password' });
+      res.status(401).json({
+        success: false,
+        message: 'Invalid username or password',
+      });
     }
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 const getAdminProfile = async (req, res) => {
-  res.json({ success: true, admin: req.admin });
+  res.json({
+    success: true,
+    admin: req.admin,
+  });
 };
 
 const setupAdmin = async (req, res) => {
   try {
-    const existingAdmin = await Admin.findOne({ where: { username: 'admin@jbs.com' } });
+
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+
+    const existingAdmin = await Admin.findOne({
+      where: { username: 'admin@jbs.com' },
+    });
+
     if (existingAdmin) {
-      existingAdmin.password = 'admin123';
+
+      existingAdmin.password = hashedPassword;
+
       await existingAdmin.save();
-      return res.json({ success: true, message: 'Admin already existed, password updated.' });
+
+      return res.json({
+        success: true,
+        message: 'Admin already existed, password updated.',
+      });
     }
+
     const admin = await Admin.create({
       username: 'admin@jbs.com',
-      password: 'admin123'
+      password: hashedPassword,
     });
-    res.json({ success: true, message: 'Default admin created successfully', admin: admin.username });
+
+    res.json({
+      success: true,
+      message: 'Default admin created successfully',
+      admin: admin.username,
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-module.exports = { loginAdmin, getAdminProfile, setupAdmin };
+module.exports = {
+  loginAdmin,
+  getAdminProfile,
+  setupAdmin,
+};
