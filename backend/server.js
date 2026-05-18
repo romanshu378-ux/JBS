@@ -40,18 +40,19 @@ app.use('/api/settings', settingRoutes);
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
+
   res.status(500).json({
     success: false,
-    message: err.message || 'Server Error'
+    message: err.message || 'Server Error',
   });
 });
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database and start server
+// Connect Database and Start Server
 const startServer = async () => {
   try {
-    // Create database if it doesn't exist
+    // Test MySQL Connection
     const mysql = require('mysql2/promise');
 
     const connection = await mysql.createConnection({
@@ -66,32 +67,32 @@ const startServer = async () => {
       },
     });
 
-    await connection.query(
-      `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`
-    );
-
     await connection.end();
 
-    console.log('Database checked/created successfully.');
+    console.log('Database connection successful.');
 
     // Connect Sequelize
     await sequelize.authenticate();
+
     console.log('MySQL connected via Sequelize.');
 
     // Sync Models
     await sequelize.sync({ alter: true });
-    console.log('All models were synchronized successfully.');
 
-    // Seed Data
+    console.log('All models synchronized successfully.');
+
+    // Seed Database
     const seedDatabase = require('./seeders/seed');
     await seedDatabase();
 
+    // Start Server
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
 
   } catch (error) {
     console.error('Unable to connect to the database:', error);
+
     process.exit(1);
   }
 };
