@@ -77,7 +77,7 @@ const startServer = async () => {
     console.log('MySQL connected via Sequelize.');
 
     // Sync Models
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     console.log('All models synchronized successfully.');
 
