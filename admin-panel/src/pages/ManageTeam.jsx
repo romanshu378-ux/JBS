@@ -33,14 +33,14 @@ const ManageTeam = () => {
 
   // IMAGE URL FIX
   const imgSrc = (path) => {
-
     if (!path) return '';
-
     const cleanPath = path.replace(/\\/g, '/');
-
-    return cleanPath.startsWith('http')
-      ? cleanPath
-      : `${BASE_URL}/${cleanPath}`;
+    if (cleanPath.startsWith('http')) return cleanPath;
+    
+    const url = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
+    const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
+    
+    return `${url}${finalPath}`;
   };
 
   // FETCH TEAM
