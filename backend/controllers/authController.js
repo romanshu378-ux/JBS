@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const { Admin } = require('../models');
 
 const generateToken = (id) => {
@@ -48,15 +47,13 @@ const getAdminProfile = async (req, res) => {
 const setupAdmin = async (req, res) => {
   try {
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-
     const existingAdmin = await Admin.findOne({
       where: { username: 'admin@jbs.com' },
     });
 
     if (existingAdmin) {
 
-      existingAdmin.password = hashedPassword;
+      existingAdmin.password = 'admin123';
 
       await existingAdmin.save();
 
@@ -68,7 +65,7 @@ const setupAdmin = async (req, res) => {
 
     const admin = await Admin.create({
       username: 'admin@jbs.com',
-      password: hashedPassword,
+      password: 'admin123',
     });
 
     res.json({
