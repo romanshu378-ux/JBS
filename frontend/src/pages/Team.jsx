@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Linkedin, Mail } from 'lucide-react';
-import API from '../api';
+import API, { BASE_URL } from '../api';
 
 const Team = () => {
 
@@ -73,7 +73,7 @@ const Team = () => {
                 <div className="h-80 overflow-hidden relative">
 
                   <img
-                    src={`https://jbs-pazg.onrender.com/${member.image?.replace(/\\/g, '/')}`}
+                    src={member.image ? `${BASE_URL}${member.image.replace(/\\/g, '/')}` : 'https://via.placeholder.com/400x400?text=No+Image'}
                     alt={member.name}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
