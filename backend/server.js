@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Static folder for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
@@ -52,6 +52,7 @@ const PORT = process.env.PORT || 5000;
 // Connect Database and Start Server
 const startServer = async () => {
   try {
+
     // Test MySQL Connection
     const mysql = require('mysql2/promise');
 
@@ -91,6 +92,7 @@ const startServer = async () => {
     });
 
   } catch (error) {
+
     console.error('Unable to connect to the database:', error);
 
     process.exit(1);
