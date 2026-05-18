@@ -5,35 +5,40 @@ const path = require('path');
 const fs = require('fs');
 const sequelize = require('./config/database');
 
-// Load env vars
+// LOAD ENV
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// ===============================
+// MIDDLEWARE
+// ===============================
+
 app.use(cors());
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================
-// CREATE UPLOADS FOLDER
-// ==========================
+// ===============================
+// UPLOADS FOLDER SETUP
+// ===============================
 
-const uploadsPath = path.join(process.cwd(), 'uploads');
+const uploadsPath = path.join(__dirname, 'uploads');
 
+// Create uploads folder automatically
 if (!fs.existsSync(uploadsPath)) {
+
   fs.mkdirSync(uploadsPath, { recursive: true });
+
 }
 
-// ==========================
-// STATIC UPLOADS FOLDER
-// ==========================
-
+// Static access
 app.use('/uploads', express.static(uploadsPath));
 
-// ==========================
-// IMPORT ROUTES
-// ==========================
+// ===============================
+// ROUTES
+// ===============================
 
 const authRoutes = require('./routes/authRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
@@ -44,51 +49,63 @@ const testimonialRoutes = require('./routes/testimonialRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
 const settingRoutes = require('./routes/settingRoutes');
 
-// ==========================
+// ===============================
 // API ROUTES
-// ==========================
+// ===============================
 
 app.use('/api/auth', authRoutes);
+
 app.use('/api/services', serviceRoutes);
+
 app.use('/api/projects', projectRoutes);
+
 app.use('/api/gallery', galleryRoutes);
+
 app.use('/api/team', teamRoutes);
+
 app.use('/api/testimonials', testimonialRoutes);
+
 app.use('/api/inquiries', inquiryRoutes);
+
 app.use('/api/settings', settingRoutes);
 
-// ==========================
-// HEALTH CHECK
-// ==========================
+// ===============================
+// TEST ROUTE
+// ===============================
 
 app.get('/', (req, res) => {
+
   res.send('Backend Running Successfully 🚀');
+
 });
 
-// ==========================
+// ===============================
 // ERROR HANDLER
-// ==========================
+// ===============================
 
 app.use((err, req, res, next) => {
 
   console.error(err.stack);
 
   res.status(500).json({
+
     success: false,
+
     message: err.message || 'Server Error',
+
   });
 
 });
 
-// ==========================
+// ===============================
 // PORT
-// ==========================
+// ===============================
 
 const PORT = process.env.PORT || 5000;
 
-// ==========================
+// ===============================
 // START SERVER
-// ==========================
+// ===============================
 
 const startServer = async () => {
 
@@ -101,13 +118,19 @@ const startServer = async () => {
     const connection = await mysql.createConnection({
 
       host: process.env.DB_HOST,
+
       user: process.env.DB_USER,
+
       password: process.env.DB_PASSWORD,
+
       port: process.env.DB_PORT,
 
       ssl: {
+
         minVersion: 'TLSv1.2',
+
         rejectUnauthorized: false,
+
       },
 
     });
@@ -122,7 +145,7 @@ const startServer = async () => {
 
     console.log('MySQL connected via Sequelize.');
 
-    // SYNC DATABASE
+    // DATABASE SYNC
 
     await sequelize.sync();
 
@@ -134,7 +157,7 @@ const startServer = async () => {
 
     await seedDatabase();
 
-    // START SERVER
+    // START EXPRESS SERVER
 
     app.listen(PORT, () => {
 
