@@ -159,7 +159,7 @@ const Home = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6">Why Partner With Us?</h2>
+              <h2 className="text-3xl md:text-5xl font-heading font-bold mb-6 text-corporateGold">Why Partner With Us?</h2>
               <p className="text-gray-300 text-lg mb-8 leading-relaxed">
                 At Janki Ballabh Services, we blend technical expertise with innovative execution. Our commitment to safety, quality, and timely delivery makes us the preferred choice for major infrastructure and solar projects.
               </p>
