@@ -3,26 +3,40 @@ import { Linkedin, Mail } from 'lucide-react';
 import API from '../api';
 
 const Team = () => {
+
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
     const fetchTeam = async () => {
+
       try {
+
         const { data } = await API.get('/team');
+
         setTeamMembers(data.data || []);
+
       } catch (error) {
+
         console.error('Error fetching team members:', error);
+
       } finally {
+
         setLoading(false);
+
       }
+
     };
 
     fetchTeam();
+
   }, []);
 
   return (
+
     <div className="pt-24 pb-20 bg-slate-50 min-h-screen">
+
       <div className="container mx-auto px-4">
 
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-corporateBlue mb-4 text-center">
@@ -59,9 +73,13 @@ const Team = () => {
                 <div className="h-80 overflow-hidden relative">
 
                   <img
-                    src={`https://jbs-pazg.onrender.com/${member.image}`}
+                    src={`https://jbs-pazg.onrender.com/${member.image?.replace(/\\/g, '/')}`}
                     alt={member.name}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.src =
+                        'https://via.placeholder.com/400x400?text=No+Image';
+                    }}
                   />
 
                   <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-corporateBlue to-transparent h-1/2 opacity-60"></div>
@@ -101,8 +119,11 @@ const Team = () => {
         )}
 
       </div>
+
     </div>
+
   );
+
 };
 
 export default Team;
