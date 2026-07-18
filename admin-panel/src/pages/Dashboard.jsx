@@ -19,45 +19,14 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [
-          servicesRes,
-          projectsRes,
-          teamRes,
-          galleryRes,
-          testimonialsRes,
-          inquiriesRes
-        ] = await Promise.all([
-          API.get('/services'),
-          API.get('/projects'),
-          API.get('/team'),
-          API.get('/gallery'),
-          API.get('/testimonials'),
-          API.get('/inquiries')
-        ]);
-
-        const services = servicesRes.data.data || [];
-        const projects = projectsRes.data.data || [];
-        const team = teamRes.data.data || [];
-        const gallery = galleryRes.data.data || [];
-        const testimonials = testimonialsRes.data.data || [];
-        const inquiries = inquiriesRes.data.data || [];
-
-        setData({
-          services: services.length,
-          projects: projects.length,
-          team: team.length,
-          gallery: gallery.length,
-          testimonials: testimonials.length,
-          inquiries: inquiries.length
-        });
-
-        // Sort by createdAt descending
-        const sortedInquiries = [...inquiries].sort((a, b) => new Date(b.createdAt || 0).getTime() < new Date(a.createdAt || 0).getTime() ? -1 : 1);
-        setRecentInquiries(sortedInquiries.slice(0, 4));
-
-        const sortedProjects = [...projects].sort((a, b) => new Date(b.createdAt || 0).getTime() < new Date(a.createdAt || 0).getTime() ? -1 : 1);
-        setRecentProjects(sortedProjects.slice(0, 4));
-
+        const res = await API.get('/dashboard');
+        const dashboardData = res.data.data;
+        
+        if (dashboardData) {
+          setData(dashboardData.counts);
+          setRecentInquiries(dashboardData.recentInquiries || []);
+          setRecentProjects(dashboardData.recentProjects || []);
+        }
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
       } finally {
@@ -66,6 +35,13 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
+
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 60000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const imgSrc = (path) => {

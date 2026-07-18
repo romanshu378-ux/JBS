@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout';
+import PrivateRoute from './components/PrivateRoute';
 
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -19,8 +20,9 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         
-        <Route path="/" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
+        <Route path="/" element={<PrivateRoute />}>
+          <Route path="/" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
           <Route path="services" element={<ManageServices />} />
           <Route path="projects" element={<ManageProjects />} />
           <Route path="team" element={<ManageTeam />} />
@@ -28,8 +30,9 @@ function App() {
           <Route path="content" element={<ContentManagement />} />
           <Route path="seo" element={<SeoSettings />} />
           <Route path="gallery" element={<ManageGallery />} />
-          <Route path="testimonials" element={<ManageTestimonials />} />
-          <Route path="settings" element={<Settings />} />
+            <Route path="testimonials" element={<ManageTestimonials />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

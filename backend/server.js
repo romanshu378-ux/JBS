@@ -48,6 +48,7 @@ const teamRoutes = require('./routes/teamRoutes');
 const testimonialRoutes = require('./routes/testimonialRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
 const settingRoutes = require('./routes/settingRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // ===============================
 // API ROUTES
@@ -68,6 +69,8 @@ app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 
 app.use('/api/settings', settingRoutes);
+
+app.use('/api/dashboard', dashboardRoutes);
 
 // ===============================
 // TEST ROUTE

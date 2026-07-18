@@ -25,5 +25,16 @@ API.interceptors.request.use((req) => {
 
   return req;
 });
+// Response interceptor to handle expired tokens
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem('adminInfo');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;
