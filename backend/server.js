@@ -51,8 +51,13 @@ if (!fs.existsSync(uploadsPath)) {
 
 }
 
-// Static access
-app.use('/uploads', express.static(uploadsPath));
+// Static access with cache-control (1 year for images)
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '1y',
+  setHeaders: (res, path) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+}));
 
 // ===============================
 // ROUTES

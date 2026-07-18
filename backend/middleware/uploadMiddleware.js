@@ -1,61 +1,72 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 
 const uploadPath = path.join(__dirname, '..', 'uploads');
 
-// Create uploads folder
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-
-    cb(null, uploadPath);
-
-  },
-
-  filename: function (req, file, cb) {
-
-    const uniqueName =
-      Date.now() + path.extname(file.originalname);
-
-    cb(null, uniqueName);
-
-  },
-
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-
   const allowed = /jpg|jpeg|png|webp/;
-
-  const ext = allowed.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-
+  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
   const mime = allowed.test(file.mimetype);
 
   if (ext && mime) {
-
     cb(null, true);
-
   } else {
-
     cb(new Error('Only Images Allowed'));
-
   }
-
 };
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter,
 });
 
-module.exports = upload;
+const processImage = async (req, res, next) => {
+  if (!req.file && (!req.files || Object.keys(req.files).length === 0)) {
+    return next();
+  }
+
+  try {
+    const processSingle = async (file) => {
+      const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
+      const filepath = path.join(uploadPath, filename);
+
+      await sharp(file.buffer)
+        .webp({ quality: 80 })
+        .toFile(filepath);
+
+      file.filename = filename;
+      file.path = filepath;
+      file.mimetype = 'image/webp';
+    };
+
+    if (req.file) {
+      await processSingle(req.file);
+    }
+
+    if (req.files) {
+      for (const fieldname in req.files) {
+        for (const file of req.files[fieldname]) {
+          await processSingle(file);
+        }
+      }
+    }
+
+    next();
+  } catch (error) {
+    console.error('Error processing image:', error);
+    next(error);
+  }
+};
+
+module.exports = { upload, processImage };

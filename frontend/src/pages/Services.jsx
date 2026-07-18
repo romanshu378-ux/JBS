@@ -48,7 +48,7 @@ const Services = () => {
                 ) : (
                   <div className="text-corporateGold mb-6">{iconMap[service.icon] || <HardHat size={40} />}</div>
                 )}
-                <h3 className="text-2xl font-bold text-corporateBlue mb-4">{service.title}</h3>
+                <h2 className="text-2xl font-bold text-corporateBlue mb-4">{service.title}</h2>
                 <p className="text-slate-600 leading-relaxed">{service.description}</p>
               </div>
             ))}

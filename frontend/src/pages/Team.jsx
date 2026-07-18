@@ -87,11 +87,11 @@ const Team = () => {
 
                   <div className="absolute bottom-4 left-0 w-full flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
 
-                    <button className="bg-white/20 p-2 rounded-full hover:bg-corporateGold text-white transition-colors backdrop-blur-sm">
+                    <button className="bg-white/20 p-2 rounded-full hover:bg-corporateGold text-white transition-colors backdrop-blur-sm" aria-label="LinkedIn Profile">
                       <Linkedin size={18} />
                     </button>
 
-                    <button className="bg-white/20 p-2 rounded-full hover:bg-corporateGold text-white transition-colors backdrop-blur-sm">
+                    <button className="bg-white/20 p-2 rounded-full hover:bg-corporateGold text-white transition-colors backdrop-blur-sm" aria-label="Email Contact">
                       <Mail size={18} />
                     </button>
 
@@ -101,9 +101,9 @@ const Team = () => {
 
                 <div className="p-6 text-center border-t-4 border-corporateGold">
 
-                  <h3 className="text-2xl font-bold text-corporateBlue mb-1">
+                  <h2 className="text-2xl font-bold text-corporateBlue mb-1">
                     {member.name}
-                  </h3>
+                  </h2>
 
                   <p className="text-slate-500 font-medium">
                     {member.role}

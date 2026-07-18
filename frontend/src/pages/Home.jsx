@@ -222,7 +222,7 @@ const Home = () => {
                       </div>
                     )}
                     <div>
-                      <h4 className="font-bold text-corporateBlue">{testi.clientName}</h4>
+                      <h3 className="font-bold text-corporateBlue text-lg">{testi.clientName}</h3>
                       <p className="text-sm text-slate-500">{testi.role}, {testi.company}</p>
                     </div>
                   </div>
