@@ -73,8 +73,9 @@ const Team = () => {
                 <div className="h-80 overflow-hidden relative">
 
                   <img
+                    loading="lazy"
                     src={member.image ? `${BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL}${member.image.replace(/\\/g, '/').startsWith('/') ? member.image.replace(/\\/g, '/') : '/' + member.image.replace(/\\/g, '/')}` : 'https://via.placeholder.com/400x400?text=No+Image'}
-                    alt={member.name}
+                    alt={member.name || "Team member"}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       e.target.src =

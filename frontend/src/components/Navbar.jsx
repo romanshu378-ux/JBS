@@ -39,6 +39,17 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <div className="bg-corporateBlue text-white text-sm py-2 px-4 hidden md:block">
@@ -76,12 +87,12 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            <Link to="/contact" className="bg-corporateBlue text-white px-6 py-2.5 rounded-sm font-semibold hover:bg-corporateBlue-light transition-colors">
+            <Link to="/contact" className="bg-corporateBlue text-white px-6 py-2.5 rounded-sm font-semibold hover:bg-corporateBlue-light transition-colors min-h-[44px] flex items-center">
               Get Quote
             </Link>
           </div>
 
-          <button className="md:hidden text-corporateBlue" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <button className="md:hidden text-corporateBlue p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
           </button>
         </div>
@@ -93,14 +104,14 @@ const Navbar = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-white pt-24 px-6 md:hidden flex flex-col"
+            className="fixed inset-0 z-40 bg-white pt-24 px-6 md:hidden flex flex-col h-[100dvh] overflow-y-auto"
           >
             {navLinks.map((link) => (
               <Link 
                 key={link.name} 
                 to={link.path}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`py-4 border-b border-gray-100 text-lg font-medium ${location.pathname === link.path ? 'text-corporateGold' : 'text-slate-800'}`}
+                className={`py-4 min-h-[44px] border-b border-gray-100 text-lg font-medium flex items-center ${location.pathname === link.path ? 'text-corporateGold' : 'text-slate-800'}`}
               >
                 {link.name}
               </Link>
@@ -108,7 +119,7 @@ const Navbar = () => {
             <Link 
               to="/contact" 
               onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-6 bg-corporateBlue text-center text-white px-6 py-3 rounded-sm font-semibold"
+              className="mt-6 bg-corporateBlue text-center text-white px-6 py-3 min-h-[44px] flex items-center justify-center rounded-sm font-semibold"
             >
               Get Quote
             </Link>

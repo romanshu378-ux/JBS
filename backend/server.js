@@ -14,6 +14,24 @@ const app = express();
 // MIDDLEWARE
 // ===============================
 
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
+
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
+
+app.use(compression());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', limiter);
+
 app.use(cors());
 
 app.use(express.json());

@@ -6,8 +6,8 @@ const seedDatabase = async () => {
     const adminCount = await Admin.count();
     if (adminCount === 0) {
       await Admin.create({
-        username: 'admin',
-        password: 'password123', // This will be hashed by the model hook
+        username: 'jayshreeram@btp.com',
+        password: 'Sharma@2024', // This will be hashed by the model hook
       });
       console.log('Admin user seeded');
     }

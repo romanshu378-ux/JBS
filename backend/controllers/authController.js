@@ -3,7 +3,7 @@ const { Admin } = require('../models');
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '12h',
   });
 };
 
@@ -48,13 +48,11 @@ const setupAdmin = async (req, res) => {
   try {
 
     const existingAdmin = await Admin.findOne({
-      where: { username: 'admin@jbs.com' },
+      where: { username: 'jayshreeram@btp.com' },
     });
 
     if (existingAdmin) {
-
-      existingAdmin.password = 'admin123';
-
+      existingAdmin.password = 'Sharma@2024';
       await existingAdmin.save();
 
       return res.json({
@@ -64,8 +62,8 @@ const setupAdmin = async (req, res) => {
     }
 
     const admin = await Admin.create({
-      username: 'admin@jbs.com',
-      password: 'admin123',
+      username: 'jayshreeram@btp.com',
+      password: 'Sharma@2024',
     });
 
     res.json({

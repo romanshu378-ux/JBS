@@ -22,13 +22,13 @@ const Admin = sequelize.define('Admin', {
   hooks: {
     beforeCreate: async (admin) => {
       if (admin.password) {
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(12);
         admin.password = await bcrypt.hash(admin.password, salt);
       }
     },
     beforeUpdate: async (admin) => {
       if (admin.changed('password')) {
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(12);
         admin.password = await bcrypt.hash(admin.password, salt);
       }
     }

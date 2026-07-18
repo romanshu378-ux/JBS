@@ -16,6 +16,7 @@ const protect = async (req, res, next) => {
         attributes: { exclude: ['password'] }
       });
       
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
       next();
     } catch (error) {
       console.error(error);

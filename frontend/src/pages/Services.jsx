@@ -44,7 +44,7 @@ const Services = () => {
             {services.map((service) => (
               <div key={service.id} className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 {service.image ? (
-                  <img src={service.image ? `${BASE_URL}${service.image.replace(/\\/g, '/')}` : ''} alt={service.title} className="w-full h-48 object-cover rounded-md mb-6" />
+                  <img loading="lazy" src={service.image ? `${BASE_URL}${service.image.replace(/\\/g, '/')}` : ''} alt={service.title || "Service image"} className="w-full h-48 object-cover rounded-md mb-6" />
                 ) : (
                   <div className="text-corporateGold mb-6">{iconMap[service.icon] || <HardHat size={40} />}</div>
                 )}
