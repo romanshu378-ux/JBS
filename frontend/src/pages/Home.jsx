@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import API, { BASE_URL } from '../api';
 
@@ -110,23 +110,44 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              <motion.div 
-                key={service.id || index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors">
-                  {iconMap[service.icon] || <HardHat size={32} />}
-                </div>
-                <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
-                <p className="text-slate-600 mb-6">{service.description}</p>
-                <Link to="/services" className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
-                  Read More <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </motion.div>
+              service.featured ? (
+                <motion.div 
+                  key={service.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white p-8 rounded-lg shadow-sm border-2 border-corporateGold hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 bg-corporateGold text-corporateBlue text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">Featured</div>
+                  <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors">
+                    {iconMap[service.icon] || <BatteryCharging size={32} />}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
+                  <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
+                  <Link to={`/services/${service.slug}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
+                    Learn More <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key={service.id || index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group"
+                >
+                  <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors">
+                    {iconMap[service.icon] || <HardHat size={32} />}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
+                  <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
+                  <Link to={`/services/${service.slug}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
+                    Read More <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </motion.div>
+              )
             ))}
           </div>
         </div>

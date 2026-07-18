@@ -65,6 +65,8 @@ app.use('/uploads', express.static(uploadsPath, {
 
 const authRoutes = require('./routes/authRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
+const serviceCategoryRoutes = require('./routes/serviceCategoryRoutes');
+const { featureRoutes, processRoutes, industryRoutes, benefitRoutes, faqRoutes } = require('./routes/serviceRelationsRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const galleryRoutes = require('./routes/galleryRoutes');
 const teamRoutes = require('./routes/teamRoutes');
@@ -80,6 +82,12 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 app.use('/api/auth', authRoutes);
 
 app.use('/api/services', serviceRoutes);
+app.use('/api/service-categories', serviceCategoryRoutes);
+app.use('/api/features', featureRoutes);
+app.use('/api/process', processRoutes);
+app.use('/api/industries', industryRoutes);
+app.use('/api/benefits', benefitRoutes);
+app.use('/api/faqs', faqRoutes);
 
 app.use('/api/projects', projectRoutes);
 

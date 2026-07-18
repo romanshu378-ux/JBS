@@ -49,7 +49,10 @@ const Services = () => {
                   <div className="text-corporateGold mb-6">{iconMap[service.icon] || <HardHat size={40} />}</div>
                 )}
                 <h2 className="text-2xl font-bold text-corporateBlue mb-4">{service.title}</h2>
-                <p className="text-slate-600 leading-relaxed">{service.description}</p>
+                <p className="text-slate-600 leading-relaxed mb-6">{service.shortDescription || service.description}</p>
+                <Link to={`/services/${service.slug}`} className="text-corporateBlue font-semibold flex items-center hover:text-corporateGold transition-colors">
+                  Read More <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
               </div>
             ))}
           </div>
