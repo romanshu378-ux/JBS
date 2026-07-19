@@ -17,9 +17,9 @@ const seedDatabase = async () => {
     if (settingsCount === 0) {
       await WebsiteSetting.create({
         company_name: 'Janki Ballabh Services',
-        phone: '+91 1234567890',
-        email: 'info@jankiballabh.com',
-        address: '123 Main Street, City, Country',
+        phone: '+91 9079139959',
+        email: 'jJankiballabh2510@gmail.com',
+        address: 'Plot No. D-32A,Narottampura,Vastu Nagar, Phase-3,Bad Ke Balaji,Jaisinghpura, Jaipur, Rajasthan – 302026',
         hero_title: 'Welcome to Janki Ballabh Services',
         hero_subtitle: 'Your trusted partner in industrial solutions',
         footer_text: '© 2026 Janki Ballabh Services. All rights reserved.',
@@ -105,7 +105,7 @@ const seedDatabase = async () => {
       for (const benefit of benefits) {
         await Benefit.create({ serviceId: service.id, ...benefit });
       }
-      
+
       console.log('EV Charger Relational Data seeded');
     }
   } catch (error) {
