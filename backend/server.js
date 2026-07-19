@@ -181,7 +181,7 @@ const startServer = async () => {
 
     // DATABASE SYNC
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     console.log('All models synchronized successfully.');
 
