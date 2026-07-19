@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import API, { BASE_URL } from '../api/index.js';
+import { cachedGet, getImageUrl } from '../api/index.js';
 
 const iconMap = {
   'Droplets': <Droplets size={32} />,
@@ -25,11 +25,11 @@ const Home = () => {
     const fetchHomeData = async () => {
       try {
         const [servicesRes, projectsRes, galleryRes, testimonialsRes, settingsRes] = await Promise.all([
-          API.get('/services'),
-          API.get('/projects'),
-          API.get('/gallery'),
-          API.get('/testimonials'),
-          API.get('/settings')
+          cachedGet('/services'),
+          cachedGet('/projects'),
+          cachedGet('/gallery'),
+          cachedGet('/testimonials'),
+          cachedGet('/settings')
         ]);
         
         setServices(servicesRes.data.data.slice(0, 6)); // Display max 6 services on home
@@ -175,9 +175,11 @@ const Home = () => {
                 >
                   <div className="h-48 overflow-hidden">
                     <img 
-                      src={project.image ? `${BASE_URL}${project.image.replace(/\\/g, '/')}` : 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&q=80'} 
+                      loading="lazy"
+                      src={getImageUrl(project.image, 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60')} 
                       alt={project.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60'; }}
                     />
                   </div>
                   <div className="p-6 flex-1 flex flex-col">
@@ -210,7 +212,7 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map((item) => (
                 <div key={item.id} className="group relative overflow-hidden rounded-lg shadow-sm cursor-pointer h-64">
-                  <img loading="lazy" src={item.image ? `${BASE_URL}${item.image.replace(/\\/g, '/')}` : ''} alt={item.title || "Gallery image"} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                  <img loading="lazy" src={getImageUrl(item.image, '')} alt={item.title || 'Gallery image'} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-corporateBlue/90 via-corporateBlue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                     <span className="text-corporateGold font-semibold text-sm mb-1">{item.category}</span>
                     <h3 className="text-white font-bold text-xl">{item.title}</h3>
@@ -283,7 +285,7 @@ const Home = () => {
                   <p className="text-slate-600 italic mb-6 relative z-10">"{testi.content}"</p>
                   <div className="flex items-center">
                     {testi.image ? (
-                      <img loading="lazy" src={testi.image ? `${BASE_URL}${testi.image.replace(/\\/g, '/')}` : ''} alt={testi.clientName || "Client image"} className="w-12 h-12 rounded-full object-cover mr-4" />
+                      <img loading="lazy" src={getImageUrl(testi.image, '')} alt={testi.clientName || 'Client image'} className="w-12 h-12 rounded-full object-cover mr-4" onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }} />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-corporateBlue/10 flex items-center justify-center text-corporateBlue font-bold mr-4">
                         {testi.clientName.charAt(0)}

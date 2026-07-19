@@ -1,10 +1,18 @@
+const { Op } = require('sequelize');
 const { Service, ServiceCategory, ServiceFeature, InstallationProcess, Industry, Benefit, FAQ } = require('../models');
 
 const getServices = async (req, res) => {
   try {
     const services = await Service.findAll({
+      // Only fetch fields needed by the listing page — skip heavy SEO/description fields
+      attributes: ['id', 'title', 'slug', 'shortDescription', 'image', 'icon', 'featured', 'displayOrder', 'categoryId'],
+      where: { status: true },
       include: [
-        { model: ServiceCategory, as: 'category' }
+        {
+          model: ServiceCategory,
+          as: 'category',
+          attributes: ['id', 'title'], // only category id + title needed
+        }
       ],
       order: [['displayOrder', 'ASC']]
     });

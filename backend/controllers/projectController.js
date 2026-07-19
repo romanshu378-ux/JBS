@@ -2,7 +2,11 @@ const { Project } = require('../models');
 
 const getProjects = async (req, res) => {
   try {
-    const projects = await Project.findAll();
+    const projects = await Project.findAll({
+      // Return only the fields needed for the listing/gallery page
+      attributes: ['id', 'title', 'category', 'description', 'image', 'client', 'completionDate'],
+      order: [['createdAt', 'DESC']], // newest projects first
+    });
     res.json({ success: true, data: projects });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

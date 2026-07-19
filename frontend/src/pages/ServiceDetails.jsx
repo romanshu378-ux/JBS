@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Zap, Settings, ShieldCheck, Wrench, BatteryCharging, FileText, Banknote, HardHat, Car, Building2, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api/index.js';
+import API, { getImageUrl } from '../api/index.js';
 
 const iconMap = {
   Zap: <Zap className="w-8 h-8 text-corporateGold" />,
@@ -56,9 +56,10 @@ const ServiceDetails = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-corporateBlue/95 to-corporateBlue/60 z-10"></div>
           <img 
-            src={service.image ? `${BASE_URL}${service.image.replace(/\\/g, '/')}` : "https://images.unsplash.com/photo-1662991033282-4df45eabcf25?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"} 
+            src={getImageUrl(service.image, 'https://images.unsplash.com/photo-1662991033282-4df45eabcf25?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')} 
             alt={service.title} 
-            className="w-full h-full object-cover opacity-60" 
+            className="w-full h-full object-cover opacity-60"
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1662991033282-4df45eabcf25?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'; }}
           />
         </div>
         
