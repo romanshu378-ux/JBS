@@ -56,7 +56,7 @@ const ServiceDetails = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-r from-corporateBlue/95 to-corporateBlue/60 z-10"></div>
           <img 
-            src={service.heroImage ? `${BASE_URL}${service.heroImage.replace(/\\/g, '/')}` : "https://images.unsplash.com/photo-1662991033282-4df45eabcf25?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"} 
+            src={service.image ? `${BASE_URL}${service.image.replace(/\\/g, '/')}` : "https://images.unsplash.com/photo-1662991033282-4df45eabcf25?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"} 
             alt={service.title} 
             className="w-full h-full object-cover opacity-60" 
           />

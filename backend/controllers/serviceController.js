@@ -41,12 +41,11 @@ const getServiceBySlug = async (req, res) => {
 const createService = async (req, res) => {
   try {
     const data = req.body;
-    if (req.files) {
-      if (req.files.heroImage) data.heroImage = `/uploads/${req.files.heroImage[0].filename}`;
-      if (req.files.thumbnail) data.thumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
+    if (req.file) {
+      data.image = `/uploads/${req.file.filename}`;
     }
     const service = await Service.create(data);
-    res.status(201).json({ success: true, data: service });
+    res.status(201).json({ success: true, data: service, imageUrl: data.image || null });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -58,13 +57,12 @@ const updateService = async (req, res) => {
     if (!service) return res.status(404).json({ success: false, message: 'Service not found' });
 
     const data = req.body;
-    if (req.files) {
-      if (req.files.heroImage) data.heroImage = `/uploads/${req.files.heroImage[0].filename}`;
-      if (req.files.thumbnail) data.thumbnail = `/uploads/${req.files.thumbnail[0].filename}`;
+    if (req.file) {
+      data.image = `/uploads/${req.file.filename}`;
     }
 
     await service.update(data);
-    res.json({ success: true, data: service });
+    res.json({ success: true, data: service, imageUrl: data.image || service.image });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

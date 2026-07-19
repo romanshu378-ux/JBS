@@ -6,13 +6,13 @@ const { upload, processImage, handleUpload } = require('../middleware/uploadMidd
 
 router.route('/')
   .get(getServices)
-  .post(protect, handleUpload(upload.fields([{ name: 'heroImage', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])), processImage, createService);
+  .post(protect, handleUpload(upload.single('image')), processImage, createService);
 
 router.route('/:slug')
   .get(getServiceBySlug);
 
 router.route('/:id')
-  .put(protect, handleUpload(upload.fields([{ name: 'heroImage', maxCount: 1 }, { name: 'thumbnail', maxCount: 1 }])), processImage, updateService)
+  .put(protect, handleUpload(upload.single('image')), processImage, updateService)
   .delete(protect, deleteService);
 
 module.exports = router;

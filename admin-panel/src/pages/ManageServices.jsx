@@ -14,7 +14,7 @@ const ManageServices = () => {
   // Modals
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
   const [formData, setFormData] = useState({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
-  const [files, setFiles] = useState({ heroImage: null, thumbnail: null });
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -57,19 +57,22 @@ const ManageServices = () => {
     e.preventDefault();
     try {
       const payload = new FormData();
-      Object.keys(formData).forEach(key => payload.append(key, formData[key]));
+      payload.append('title', formData.title);
+      payload.append('slug', formData.slug);
+      payload.append('categoryId', formData.categoryId);
+      payload.append('description', formData.description);
+      payload.append('shortDescription', formData.shortDescription);
       
-      if (files.heroImage) payload.append('heroImage', files.heroImage);
-      if (files.thumbnail) payload.append('thumbnail', files.thumbnail);
+      if (selectedImage) {
+        payload.append('image', selectedImage);
+      }
 
-      const { data } = await API.post('/services', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const { data } = await API.post('/services', payload);
       
       setServices([...services, data.data]);
       setShowAddServiceModal(false);
       setFormData({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
-      setFiles({ heroImage: null, thumbnail: null });
+      setSelectedImage(null);
       alert('Service created successfully!');
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to add service');
@@ -178,15 +181,10 @@ const ManageServices = () => {
                 <textarea className="w-full border rounded p-2 h-20" value={formData.shortDescription} onChange={e => setFormData({...formData, shortDescription: e.target.value})} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Hero Image (heroImage)</label>
-                  <input type="file" accept="image/*" className="w-full border rounded p-2 text-sm" onChange={e => setFiles({...files, heroImage: e.target.files[0]})} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Thumbnail (thumbnail)</label>
-                  <input type="file" accept="image/*" className="w-full border rounded p-2 text-sm" onChange={e => setFiles({...files, thumbnail: e.target.files[0]})} />
-                </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Service Image</label>
+                <input type="file" accept=".jpg,.jpeg,.png,.webp" className="w-full border rounded p-2 text-sm" onChange={e => setSelectedImage(e.target.files[0])} />
+                <p className="text-xs text-gray-400 mt-1">Allowed: jpg, jpeg, png, webp. Max 5MB.</p>
               </div>
               
               <div className="pt-4 border-t flex justify-end">

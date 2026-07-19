@@ -28,11 +28,7 @@ const Service = sequelize.define('Service', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
-  heroImage: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
-  thumbnail: {
+  image: {
     type: DataTypes.STRING,
     allowNull: true,
   },
