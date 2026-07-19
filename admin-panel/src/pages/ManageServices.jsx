@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ArrowLeft, Image, Link as LinkIcon, Settings, Layers, Tool, CheckCircle, HelpCircle, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowLeft, ImageIcon, Link as LinkIcon, Settings, Layers, Wrench, CheckCircle, HelpCircle, X } from 'lucide-react';
 import API, { BASE_URL } from '../api/index.js';
 
 const ManageServices = () => {
@@ -208,7 +208,7 @@ const ManageServices = () => {
             <div className="flex border-b border-gray-200 overflow-x-auto">
               {[
                 { id: 'details', label: 'Main Details', icon: Settings },
-                { id: 'features', label: 'Features', icon: Tool },
+                { id: 'features', label: 'Features', icon: Wrench },
                 { id: 'process', label: 'Installation Process', icon: Layers },
                 { id: 'industries', label: 'Industries', icon: LinkIcon },
                 { id: 'benefits', label: 'Benefits', icon: CheckCircle },
