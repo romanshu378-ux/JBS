@@ -69,4 +69,29 @@ const processImage = async (req, res, next) => {
   }
 };
 
-module.exports = { upload, processImage };
+const handleUpload = (uploadMiddleware) => {
+  return (req, res, next) => {
+    uploadMiddleware(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).json({
+            success: false,
+            message: `Image upload failed. Expected field: ${err.field}`
+          });
+        }
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({
+            success: false,
+            message: 'Image upload failed. File size exceeds the 5MB limit.'
+          });
+        }
+        return res.status(400).json({ success: false, message: `Multer Error: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+      next();
+    });
+  };
+};
+
+module.exports = { upload, processImage, handleUpload };

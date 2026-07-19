@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ArrowLeft, Image, Link as LinkIcon, Settings, Layers, Tool, CheckCircle, HelpCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowLeft, Image, Link as LinkIcon, Settings, Layers, Tool, CheckCircle, HelpCircle, X } from 'lucide-react';
 import API, { BASE_URL } from '../api';
 
 const ManageServices = () => {
-  const [view, setView] = useState('categories'); // categories | services | edit-service
+  const [view, setView] = useState('services'); // categories | services | edit-service
   const [categories, setCategories] = useState([]);
   const [services, setServices] = useState([]);
   
   const [activeService, setActiveService] = useState(null);
-  const [activeTab, setActiveTab] = useState('details'); // details | features | process | industries | benefits | faq
+  const [activeTab, setActiveTab] = useState('details'); 
   const [relationsData, setRelationsData] = useState([]);
+
+  // Modals
+  const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const [formData, setFormData] = useState({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
+  const [files, setFiles] = useState({ heroImage: null, thumbnail: null });
 
   useEffect(() => {
     fetchCategories();
@@ -48,8 +53,31 @@ const ManageServices = () => {
     }
   }, [activeTab, activeService]);
 
+  const handleAddService = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = new FormData();
+      Object.keys(formData).forEach(key => payload.append(key, formData[key]));
+      
+      if (files.heroImage) payload.append('heroImage', files.heroImage);
+      if (files.thumbnail) payload.append('thumbnail', files.thumbnail);
+
+      const { data } = await API.post('/services', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      setServices([...services, data.data]);
+      setShowAddServiceModal(false);
+      setFormData({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
+      setFiles({ heroImage: null, thumbnail: null });
+      alert('Service created successfully!');
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to add service');
+    }
+  };
+
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Manage Services CMS</h1>
@@ -95,7 +123,7 @@ const ManageServices = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between mb-4">
             <h2 className="text-xl font-semibold">Services</h2>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><Plus className="w-4 h-4 mr-2" /> Add Service</button>
+            <button onClick={() => setShowAddServiceModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><Plus className="w-4 h-4 mr-2" /> Add Service</button>
           </div>
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b">
@@ -114,6 +142,58 @@ const ManageServices = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Add Service Modal */}
+      {showAddServiceModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
+              <h2 className="text-2xl font-bold">Add New Service</h2>
+              <button onClick={() => setShowAddServiceModal(false)} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full"><X className="w-6 h-6" /></button>
+            </div>
+            <form onSubmit={handleAddService} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Title</label>
+                  <input required type="text" className="w-full border rounded p-2" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Slug</label>
+                  <input required type="text" className="w-full border rounded p-2" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select required className="w-full border rounded p-2" value={formData.categoryId} onChange={e => setFormData({...formData, categoryId: e.target.value})}>
+                  <option value="">Select Category</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Short Description</label>
+                <textarea className="w-full border rounded p-2 h-20" value={formData.shortDescription} onChange={e => setFormData({...formData, shortDescription: e.target.value})} />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Hero Image (heroImage)</label>
+                  <input type="file" accept="image/*" className="w-full border rounded p-2 text-sm" onChange={e => setFiles({...files, heroImage: e.target.files[0]})} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Thumbnail (thumbnail)</label>
+                  <input type="file" accept="image/*" className="w-full border rounded p-2 text-sm" onChange={e => setFiles({...files, thumbnail: e.target.files[0]})} />
+                </div>
+              </div>
+              
+              <div className="pt-4 border-t flex justify-end">
+                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-medium shadow-sm hover:bg-blue-700">Create Service</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
