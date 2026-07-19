@@ -15,6 +15,7 @@ const iconMap = {
 
 const Home = () => {
   const [services, setServices] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [gallery, setGallery] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
   const [settings, setSettings] = useState(null);
@@ -23,14 +24,16 @@ const Home = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        const [servicesRes, galleryRes, testimonialsRes, settingsRes] = await Promise.all([
+        const [servicesRes, projectsRes, galleryRes, testimonialsRes, settingsRes] = await Promise.all([
           API.get('/services'),
+          API.get('/projects'),
           API.get('/gallery'),
           API.get('/testimonials'),
           API.get('/settings')
         ]);
         
         setServices(servicesRes.data.data.slice(0, 6)); // Display max 6 services on home
+        setProjects(projectsRes.data.data.slice(0, 6)); // Display max 6 projects
         setGallery(galleryRes.data.data.slice(0, 6)); // Display max 6 gallery items
         setTestimonials(testimonialsRes.data.data.slice(0, 3)); // Display max 3 testimonials
         setSettings(settingsRes.data.data);
@@ -152,6 +155,50 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {projects.length > 0 && (
+        <section className="py-24 bg-white border-b border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16 max-w-3xl mx-auto">
+              <h2 className="text-3xl md:text-5xl font-heading font-bold text-corporateBlue mb-6">Our Recent Projects</h2>
+              <p className="text-slate-600 text-lg">Delivering excellence across diverse industrial sectors.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {projects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col"
+                >
+                  <div className="h-48 overflow-hidden">
+                    <img 
+                      src={project.image ? `${BASE_URL}${project.image.replace(/\\/g, '/')}` : 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&q=80'} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <span className="text-corporateGold text-xs font-bold uppercase tracking-wider mb-2">{project.category}</span>
+                    <h3 className="text-xl font-bold text-corporateBlue mb-3">{project.title}</h3>
+                    <p className="text-slate-600 mb-6 flex-1 line-clamp-3">{project.description}</p>
+                    <Link to="/projects" className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors mt-auto">
+                      View Project <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link to="/projects" className="inline-block border-2 border-corporateBlue text-corporateBlue hover:bg-corporateBlue hover:text-white font-semibold py-3 px-8 rounded transition-colors">
+                View All Projects
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
       
       {gallery.length > 0 && (
         <section className="py-24 bg-white">

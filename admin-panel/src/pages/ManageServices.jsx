@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ArrowLeft, ImageIcon, Link as LinkIcon, Settings, Layers, Wrench, CheckCircle, HelpCircle, X } from 'lucide-react';
 import API, { BASE_URL } from '../api/index.js';
+import { ToastContainer, useToast } from '../components/Toast.jsx';
 
 const ManageServices = () => {
   const [view, setView] = useState('services'); // categories | services | edit-service
@@ -10,9 +11,15 @@ const ManageServices = () => {
   const [activeService, setActiveService] = useState(null);
   const [activeTab, setActiveTab] = useState('details'); 
   const [relationsData, setRelationsData] = useState([]);
+  const { toasts, removeToast, success, error } = useToast();
+
+  // Categories Modal
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [categoryFormData, setCategoryFormData] = useState({ title: '', slug: '', description: '' });
 
   // Modals
   const [showAddServiceModal, setShowAddServiceModal] = useState(false);
+  const [editServiceId, setEditServiceId] = useState(null);
   const [formData, setFormData] = useState({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -53,6 +60,30 @@ const ManageServices = () => {
     }
   }, [activeTab, activeService]);
 
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await API.post('/service-categories', categoryFormData);
+      setCategories([...categories, data.data]);
+      setShowAddCategoryModal(false);
+      setCategoryFormData({ title: '', slug: '', description: '' });
+      success('Category created successfully!');
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to add category');
+    }
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this category?')) return;
+    try {
+      await API.delete(`/service-categories/${id}`);
+      setCategories(categories.filter(c => c.id !== id));
+      success('Category deleted successfully!');
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete category');
+    }
+  };
+
   const handleAddService = async (e) => {
     e.preventDefault();
     try {
@@ -67,20 +98,52 @@ const ManageServices = () => {
         payload.append('image', selectedImage);
       }
 
-      const { data } = await API.post('/services', payload);
+      if (editServiceId) {
+        const { data } = await API.put(`/services/${editServiceId}`, payload);
+        setServices(services.map(s => s.id === editServiceId ? data.data : s));
+        success('Service updated successfully!');
+      } else {
+        const { data } = await API.post('/services', payload);
+        setServices([...services, data.data]);
+        success('Service created successfully!');
+      }
       
-      setServices([...services, data.data]);
       setShowAddServiceModal(false);
       setFormData({ title: '', slug: '', categoryId: '', description: '', shortDescription: '' });
       setSelectedImage(null);
-      alert('Service created successfully!');
-    } catch (error) {
-      alert(error.response?.data?.message || 'Failed to add service');
+      setEditServiceId(null);
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to save service');
+    }
+  };
+
+  const handleEditServiceClick = (service) => {
+    setFormData({
+      title: service.title,
+      slug: service.slug,
+      categoryId: service.categoryId,
+      description: service.description || '',
+      shortDescription: service.shortDescription || ''
+    });
+    setEditServiceId(service.id);
+    setSelectedImage(null);
+    setShowAddServiceModal(true);
+  };
+
+  const handleDeleteService = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this service?')) return;
+    try {
+      await API.delete(`/services/${id}`);
+      setServices(services.filter(s => s.id !== id));
+      success('Service deleted successfully!');
+    } catch (err) {
+      error(err.response?.data?.message || 'Failed to delete service');
     }
   };
 
   return (
     <div className="p-6 max-w-7xl mx-auto relative">
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Manage Services CMS</h1>
@@ -99,7 +162,7 @@ const ManageServices = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex justify-between mb-4">
             <h2 className="text-xl font-semibold">Service Categories</h2>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><Plus className="w-4 h-4 mr-2" /> Add Category</button>
+            <button onClick={() => setShowAddCategoryModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"><Plus className="w-4 h-4 mr-2" /> Add Category</button>
           </div>
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b">
@@ -112,8 +175,7 @@ const ManageServices = () => {
                   <td className="p-3 font-medium">{c.title}</td>
                   <td className="p-3 text-gray-400">{c.slug}</td>
                   <td className="p-3 text-right">
-                    <button className="text-blue-600 mr-3"><Edit2 className="w-4 h-4" /></button>
-                    <button className="text-red-600"><Trash2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleDeleteCategory(c.id)} className="text-red-600 p-2 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
                   </td>
                 </tr>
               ))}
@@ -130,16 +192,25 @@ const ManageServices = () => {
           </div>
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 border-b">
-              <tr><th className="p-3">Title</th><th className="p-3">Category</th><th className="p-3">Featured</th><th className="p-3 text-right">Manage Relational Data</th></tr>
+              <tr><th className="p-3">Image</th><th className="p-3">Title</th><th className="p-3">Category</th><th className="p-3">Featured</th><th className="p-3 text-right">Actions</th></tr>
             </thead>
             <tbody>
               {services.map(s => (
                 <tr key={s.id} className="border-b">
+                  <td className="p-3">
+                    {s.image ? (
+                      <img src={`${BASE_URL}${s.image.replace(/\\/g, '/')}`} alt={s.title} className="w-12 h-12 object-cover rounded" />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-100 flex items-center justify-center rounded"><ImageIcon className="w-5 h-5 text-gray-400" /></div>
+                    )}
+                  </td>
                   <td className="p-3 font-medium text-gray-800">{s.title}</td>
                   <td className="p-3">{s.category?.title || 'None'}</td>
                   <td className="p-3">{s.featured ? <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Yes</span> : 'No'}</td>
                   <td className="p-3 text-right">
-                    <button onClick={() => { setActiveService(s); setView('edit-service'); setActiveTab('details'); }} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors font-medium">Manage CMS Data</button>
+                    <button onClick={() => { setActiveService(s); setView('edit-service'); setActiveTab('details'); }} className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded text-sm transition-colors font-medium mr-2">Manage Data</button>
+                    <button onClick={() => handleEditServiceClick(s)} className="text-blue-600 p-2 hover:bg-blue-50 rounded"><Edit2 className="w-4 h-4" /></button>
+                    <button onClick={() => handleDeleteService(s.id)} className="text-red-600 p-2 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
                   </td>
                 </tr>
               ))}
@@ -148,13 +219,38 @@ const ManageServices = () => {
         </div>
       )}
 
-      {/* Add Service Modal */}
+      {/* Add Category Modal */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h2 className="text-2xl font-bold">Add Category</h2>
+              <button onClick={() => setShowAddCategoryModal(false)} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full"><X className="w-6 h-6" /></button>
+            </div>
+            <form onSubmit={handleAddCategory} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title</label>
+                <input required type="text" className="w-full border rounded p-2" value={categoryFormData.title} onChange={e => setCategoryFormData({...categoryFormData, title: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Slug</label>
+                <input required type="text" className="w-full border rounded p-2" value={categoryFormData.slug} onChange={e => setCategoryFormData({...categoryFormData, slug: e.target.value})} />
+              </div>
+              <div className="pt-4 border-t flex justify-end">
+                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-medium shadow-sm hover:bg-blue-700">Create Category</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit Service Modal */}
       {showAddServiceModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10">
-              <h2 className="text-2xl font-bold">Add New Service</h2>
-              <button onClick={() => setShowAddServiceModal(false)} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full"><X className="w-6 h-6" /></button>
+              <h2 className="text-2xl font-bold">{editServiceId ? 'Edit Service' : 'Add New Service'}</h2>
+              <button onClick={() => { setShowAddServiceModal(false); setEditServiceId(null); }} className="text-gray-500 hover:bg-gray-100 p-2 rounded-full"><X className="w-6 h-6" /></button>
             </div>
             <form onSubmit={handleAddService} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -188,7 +284,7 @@ const ManageServices = () => {
               </div>
               
               <div className="pt-4 border-t flex justify-end">
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-medium shadow-sm hover:bg-blue-700">Create Service</button>
+                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded font-medium shadow-sm hover:bg-blue-700">{editServiceId ? 'Update Service' : 'Create Service'}</button>
               </div>
             </form>
           </div>
