@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);

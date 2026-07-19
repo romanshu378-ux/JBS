@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Trash2, MessageSquare } from 'lucide-react';
-import API from '../api';
+import API from '../api/index.js';
 import Modal from '../components/Modal';
 
 const Inquiries = () => {

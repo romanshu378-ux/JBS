@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, Briefcase, Folders, MessageSquare, User, Image as ImageIcon, Star, Clock } from 'lucide-react';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const Dashboard = () => {
   const [data, setData] = useState({

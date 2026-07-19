@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Image as ImageIcon, Edit, Trash2, Plus, Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Lock, User } from 'lucide-react';
-import API from '../api';
+import API from '../api/index.js';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });

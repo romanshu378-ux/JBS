@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const iconMap = {
   'Droplets': <Droplets size={32} />,

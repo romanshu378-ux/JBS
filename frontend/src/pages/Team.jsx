@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Linkedin, Mail } from 'lucide-react';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const Team = () => {
 

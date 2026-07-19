@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, ArrowLeft, Image, Link as LinkIcon, Settings, Layers, Tool, CheckCircle, HelpCircle, X } from 'lucide-react';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const ManageServices = () => {
   const [view, setView] = useState('services'); // categories | services | edit-service

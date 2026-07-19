@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Folders, Edit, Trash2, Plus, Upload, Calendar, User } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 

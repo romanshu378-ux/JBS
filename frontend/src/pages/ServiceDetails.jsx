@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Zap, Settings, ShieldCheck, Wrench, BatteryCharging, FileText, Banknote, HardHat, Car, Building2, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api';
+import API, { BASE_URL } from '../api/index.js';
 
 const iconMap = {
   Zap: <Zap className="w-8 h-8 text-corporateGold" />,

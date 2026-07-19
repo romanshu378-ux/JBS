@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
-import API from '../api';
+import API from '../api/index.js';
 
 const Footer = () => {
   const [settings, setSettings] = useState(null);
