@@ -1,6 +1,4 @@
 node_modules/
 **/node_modules/
 dist/
-.envgit add .
-git commit -m "Remove tracked node_modules"
-git push origin main
+.env
