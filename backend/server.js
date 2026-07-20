@@ -78,14 +78,22 @@ app.use('/api', limiter);
 
 // ── CORS ───────────────────────────────────────────────────────────────────────
 const ALLOWED_ORIGINS = [
-  'https://jankiballabh.com',
-  'https://www.jankiballabh.com',
-  // Allow Vercel preview deployments
-  /\.vercel\.app$/,
-  // Allow localhost for local development
+  // Production domains
+  'https://jankiballabhservices.in',
+  'https://www.jankiballabhservices.in',
+
+  // Frontend — Vercel
+  'https://jbs-nine.vercel.app',
+
+  // Admin panel — Vercel
+  'https://jbs-admin-rho.vercel.app',
+
+  // Admin panel — future custom domain
+  'https://admin.jankiballabhservices.in',
+
+  // Local development
   'http://localhost:5173',
   'http://localhost:5174',
-  'http://localhost:3000',
 ];
 
 app.use(
