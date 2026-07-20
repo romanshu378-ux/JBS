@@ -10,10 +10,20 @@ const createDefaultAdmin = async () => {
     // Sync models
     await sequelize.sync();
 
-    const username = 'jayshreeram@btp.com';
+    await Admin.destroy({
+  where: {
+    username: [
+      'admin',
+      'admin@jbs.com',
+      'jayshreeram@btp.com'
+    ]
+  }
+});
+
+    const username = 'admin@jankiballabhservices.in';
 
     // Hash password
-    const hashedPassword = await bcrypt.hash('Sharma@2024', 12);
+    const hashedPassword = await bcrypt.hash('Sharma@2025', 12);
 
     // Check existing admin
     const existingAdmin = await Admin.findOne({
