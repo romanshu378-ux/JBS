@@ -27,8 +27,16 @@ app.use(
     // Allow cross-origin resources (needed for Render-hosted uploads)
     crossOriginResourcePolicy: { policy: 'cross-origin' },
 
-    // Content Security Policy — backend API responses; not a browser app so permissive
-    contentSecurityPolicy: false,
+    // Content Security Policy
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        frameSrc: ["'self'", "https://www.google.com"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+      },
+    },
 
     // HSTS — enforce HTTPS on Render
     strictTransportSecurity: {
