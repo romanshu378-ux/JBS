@@ -16,7 +16,8 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminInfo');
-    navigate('/login');
+    sessionStorage.clear();
+    navigate('/login', { replace: true });
   };
 
   const menuItems = [
