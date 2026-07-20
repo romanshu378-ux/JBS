@@ -111,8 +111,28 @@ const ContentManagement = () => {
     setSuccess(false);
     setError('');
 
+    let processedData = { ...formData };
+    if (processedData.google_map_embed) {
+      let mapUrl = processedData.google_map_embed.trim();
+      
+      // If user pasted a full iframe HTML, extract the src attribute
+      const iframeRegex = /<iframe[^>]+src=["']([^"']+)["']/;
+      const match = mapUrl.match(iframeRegex);
+      if (match) {
+        mapUrl = match[1];
+      }
+
+      // Validate it's a Google Maps embed URL
+      if (mapUrl && !mapUrl.startsWith('https://www.google.com/maps/embed')) {
+        setError('Google Maps URL must be a valid Embed URL starting with https://www.google.com/maps/embed');
+        setSaving(false);
+        return;
+      }
+      processedData.google_map_embed = mapUrl;
+    }
+
     try {
-      const res = await API.put('/settings', formData, {
+      const res = await API.put('/settings', processedData, {
         headers: { 'Content-Type': 'application/json' },
       });
       // Sync form with what the DB actually saved
