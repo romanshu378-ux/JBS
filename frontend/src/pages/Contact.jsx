@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import API from '../api/index.js';
-import SEOHead, { SITE } from '../hooks/useSEO.js';
+import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 // ContactPage + LocalBusiness schema with full verified address
 const contactSchema = [

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Factory, Zap, Droplets, HardHat, Building2, Sun, ArrowRight } from 'lucide-react';
 import { cachedGet, getImageUrl } from '../api/index.js';
 import SkeletonCard from '../components/SkeletonCard';
-import SEOHead, { SITE } from '../hooks/useSEO.js';
+import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=60';

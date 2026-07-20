@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Linkedin, Mail } from 'lucide-react';
 import { cachedGet, getImageUrl } from '../api/index.js';
-import SEOHead, { SITE } from '../hooks/useSEO.js';
+import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 // Local SVG placeholder — no external request, no tech-stack leak
 const PLACEHOLDER_IMAGE =

@@ -1,4 +1,4 @@
-import SEOHead, { SITE } from '../hooks/useSEO.js';
+import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 const About = () => {
   // AboutPage + Organization structured data

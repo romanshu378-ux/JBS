@@ -2,7 +2,7 @@ import { useState, useEffect, memo } from 'react';
 import { cachedGet, getImageUrl } from '../api/index.js';
 import SkeletonCard from '../components/SkeletonCard';
 import { HardHat } from 'lucide-react';
-import SEOHead, { SITE } from '../hooks/useSEO.js';
+import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60';

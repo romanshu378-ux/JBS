@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cachedGet, getImageUrl } from '../api/index.js';
-import SEOHead, { buildBaseSchema, SITE } from '../hooks/useSEO.js';
+import SEOHead, { buildBaseSchema, SITE } from '../hooks/useSEO.jsx';
 
 const iconMap = {
   'Droplets': <Droplets size={32} />,
