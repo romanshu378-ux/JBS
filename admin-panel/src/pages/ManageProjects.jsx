@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Folders, Edit, Trash2, Plus, Upload, Calendar, User } from 'lucide-react';
+import { Folders, Edit, Trash2, Plus, Upload, Calendar, User, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api/index.js';
+import API, { getImageUrl, isLegacyUpload } from '../api/index.js';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -19,7 +19,6 @@ const ManageProjects = () => {
   const fileInputRef = useRef(null);
   const toast = useToast();
 
-  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path.replace(/\\/g, '/')}`);
   const FALLBACK = 'https://images.unsplash.com/photo-1541888081691-23a7bb7d5d85?auto=format&fit=crop&w=400&q=60';
 
   const fetchProjects = async () => {
@@ -55,7 +54,7 @@ const ManageProjects = () => {
     });
     setEditingId(p.id);
     setImageFile(null);
-    setImagePreview(p.image ? imgSrc(p.image) : null);
+    setImagePreview(p.image && !isLegacyUpload(p.image) ? getImageUrl(p.image, FALLBACK) : null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     setIsModalOpen(true);
   };
@@ -130,7 +129,7 @@ const ManageProjects = () => {
               <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
                 <div className="h-44 bg-slate-200 relative overflow-hidden">
                   <img
-                    src={p.image ? imgSrc(p.image) : FALLBACK}
+                    src={p.image && !isLegacyUpload(p.image) ? getImageUrl(p.image, FALLBACK) : FALLBACK}
                     alt={p.title}
                     className="w-full h-full object-cover"
                     onError={(e) => { e.target.src = FALLBACK; }}
@@ -190,6 +189,15 @@ const ManageProjects = () => {
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Project Image</label>
+            {editingId && (() => {
+              const proj = projects.find(p => p.id === editingId);
+              return proj && isLegacyUpload(proj.image);
+            })() && (
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 mb-3 text-xs">
+                <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                <span><strong>Image from old local storage.</strong> The original file no longer exists on the server. Please upload a new image — it will be permanently stored on Cloudinary.</span>
+              </div>
+            )}
             <div className="flex items-center gap-4">
               {imagePreview && (
                 <img src={imagePreview} alt="Preview" className="w-20 h-14 rounded-lg object-cover border border-gray-200 flex-shrink-0" />

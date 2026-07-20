@@ -6,7 +6,21 @@ const sequelize = require('./config/database');
 // LOAD ENV
 dotenv.config();
 
+// ===============================
+// STARTUP: VALIDATE REQUIRED ENV VARS
+// ===============================
+const REQUIRED_ENV = ['DB_HOST', 'DB_USER', 'DB_NAME', 'JWT_SECRET', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET'];
+const missingEnv = REQUIRED_ENV.filter((key) => !process.env[key]);
+if (missingEnv.length > 0) {
+  console.error('─────────────────────────────────────────────────────');
+  console.error('⚠  MISSING ENVIRONMENT VARIABLES — image uploads will fail!');
+  missingEnv.forEach((key) => console.error(`   • ${key}`));
+  console.error('   Add these in Render → Service → Environment, then redeploy.');
+  console.error('─────────────────────────────────────────────────────');
+}
+
 const app = express();
+
 
 // ===============================
 // SECURITY MIDDLEWARE

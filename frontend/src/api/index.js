@@ -13,25 +13,47 @@ const API = axios.create({
 // ─── Image URL Helper ─────────────────────────────────────────────────────────
 /**
  * Build the full, production-safe image URL from a stored path.
- * Handles null, absolute URLs, Windows backslashes, and missing leading slash.
  *
- * @param {string|null} imagePath - e.g. "/uploads/foo.jpg" or "uploads\\foo.jpg"
- * @param {string} [fallback=''] - fallback URL when imagePath is empty
+ * Rules:
+ *  1. null / empty           → fallback
+ *  2. https://res.cloudinary → return as-is (new Cloudinary URL)
+ *  3. http(s)://...          → return as-is (any external URL)
+ *  4. /uploads/...           → LEGACY path from Render ephemeral disk
+ *                              These files no longer exist. Return fallback.
+ *  5. anything else          → prepend BASE_URL (should not occur)
+ *
+ * @param {string|null} imagePath
+ * @param {string}      [fallback=''] - URL to use when the image is missing
  * @returns {string}
  */
 export const getImageUrl = (imagePath, fallback = '') => {
   if (!imagePath) return fallback;
 
-  // Already a full URL (e.g. https://...) — return as-is
+  // ── Cloudinary or any full HTTPS URL → use directly ───────────────────────
   if (/^https?:\/\//i.test(imagePath)) return imagePath;
 
-  // Normalise Windows backslashes to forward slashes
+  // ── Legacy Render local-storage path → dead link, return fallback ─────────
   const normalised = imagePath.replace(/\\/g, '/');
+  if (normalised.startsWith('/uploads/') || normalised.startsWith('uploads/')) {
+    return fallback;
+  }
 
-  // Ensure leading slash
+  // ── Any remaining relative path → prepend BASE_URL ────────────────────────
   const withSlash = normalised.startsWith('/') ? normalised : `/${normalised}`;
-
   return `${BASE_URL}${withSlash}`;
+};
+
+/**
+ * Returns true when an image path is from the old Render local storage.
+ * Use this in admin panels to display a re-upload warning.
+ *
+ * @param {string|null} imagePath
+ * @returns {boolean}
+ */
+export const isLegacyUpload = (imagePath) => {
+  if (!imagePath) return false;
+  const p = imagePath.replace(/\\/g, '/');
+  return p.startsWith('/uploads/') || p.startsWith('uploads/');
 };
 
 // ─── In-Memory API Cache ──────────────────────────────────────────────────────

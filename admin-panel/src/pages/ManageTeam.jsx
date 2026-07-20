@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Users, Edit, Trash2, Plus, Upload } from 'lucide-react';
+import { Users, Edit, Trash2, Plus, Upload, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api/index.js';
+import API, { getImageUrl, isLegacyUpload } from '../api/index.js';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -29,21 +29,7 @@ const ManageTeam = () => {
 
   const toast = useToast();
 
-  // LIVE BACKEND URL
 
-  // IMAGE URL FIX
-  const imgSrc = (path) => {
-    if (!path) return '';
-    const cleanPath = path.replace(/\\/g, '/');
-    if (cleanPath.startsWith('http')) return cleanPath;
-    
-    const url = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;
-    const finalPath = cleanPath.startsWith('/') ? cleanPath : `/${cleanPath}`;
-    
-    return `${url}${finalPath}`;
-  };
-
-  // FETCH TEAM
   const fetchTeam = async () => {
 
     try {
@@ -105,11 +91,9 @@ const ManageTeam = () => {
     });
 
     setEditingId(member.id);
-
     setImageFile(null);
-
-    setImagePreview(member.image ? imgSrc(member.image) : null);
-
+    // For legacy /uploads/ paths: show no preview (file is gone), let user know they must re-upload
+    setImagePreview(member.image && !isLegacyUpload(member.image) ? getImageUrl(member.image) : null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -306,8 +290,8 @@ const ManageTeam = () => {
 
                         <img
                           src={
-                            m.image
-                              ? imgSrc(m.image)
+                            m.image && !isLegacyUpload(m.image)
+                              ? getImageUrl(m.image)
                               : `https://ui-avatars.com/api/?name=${encodeURIComponent(m.name)}&background=1e3a5f&color=fff`
                           }
                           alt={m.name}
@@ -426,10 +410,23 @@ const ManageTeam = () => {
 
           {/* IMAGE */}
           <div>
-
             <label className="block text-sm font-medium text-slate-700 mb-2">
               Profile Photo
             </label>
+
+            {/* Legacy upload warning */}
+            {editingId && (() => {
+              const member = team.find(m => m.id === editingId);
+              return member && isLegacyUpload(member.image);
+            })() && (
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 mb-3 text-xs">
+                <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>Image from old local storage.</strong> The original file no longer exists on the server.
+                  Please upload a new image — it will be permanently stored on Cloudinary.
+                </span>
+              </div>
+            )}
 
             <div className="flex items-center gap-4">
 

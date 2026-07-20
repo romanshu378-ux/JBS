@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Image as ImageIcon, Edit, Trash2, Plus, Upload } from 'lucide-react';
+import { Image as ImageIcon, Edit, Trash2, Plus, Upload, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { BASE_URL } from '../api/index.js';
+import API, { getImageUrl, isLegacyUpload } from '../api/index.js';
 import Modal from '../components/Modal';
 import { ToastContainer, useToast } from '../components/Toast';
 
@@ -19,7 +19,7 @@ const ManageGallery = () => {
   const fileInputRef = useRef(null);
   const toast = useToast();
 
-  const imgSrc = (path) => (!path ? '' : path.startsWith('http') ? path : `${BASE_URL}${path.replace(/\\/g, '/')}`);
+  const GALLERY_FALLBACK = 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=400&q=60';
 
   const fetchImages = async () => {
     try {
@@ -41,7 +41,7 @@ const ManageGallery = () => {
   const openEdit = (img) => {
     setFormData({ title: img.title || '', category: img.category || '' });
     setEditingId(img.id); setImageFile(null);
-    setImagePreview(img.image ? imgSrc(img.image) : null);
+    setImagePreview(img.image && !isLegacyUpload(img.image) ? getImageUrl(img.image, GALLERY_FALLBACK) : null);
     if (fileInputRef.current) fileInputRef.current.value = '';
     setIsModalOpen(true);
   };
@@ -97,7 +97,7 @@ const ManageGallery = () => {
               {images.map((img) => (
                 <motion.div key={img.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="group relative rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
                   <div className="h-40 bg-slate-200">
-                    <img src={imgSrc(img.image)} alt={img.title} className="w-full h-full object-cover" />
+                    <img src={img.image && !isLegacyUpload(img.image) ? getImageUrl(img.image, GALLERY_FALLBACK) : GALLERY_FALLBACK} alt={img.title} className="w-full h-full object-cover" />
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                     <button onClick={() => openEdit(img)} className="bg-white text-corporateBlue p-2 rounded-full hover:bg-blue-50" title="Edit"><Edit size={15} /></button>
@@ -125,6 +125,15 @@ const ManageGallery = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">Image {!editingId && <span className="text-red-500">*</span>}</label>
+            {editingId && (() => {
+              const item = images.find(i => i.id === editingId);
+              return item && isLegacyUpload(item.image);
+            })() && (
+              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 mb-3 text-xs">
+                <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                <span><strong>Image from old local storage.</strong> The original file no longer exists on the server. Please upload a new image — it will be permanently stored on Cloudinary.</span>
+              </div>
+            )}
             {imagePreview && <img src={imagePreview} alt="Preview" className="w-full h-36 object-cover rounded-lg border border-gray-200 mb-3" />}
             <label className="flex items-center justify-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 border-2 border-dashed border-gray-300 rounded-lg px-4 py-4 text-sm text-slate-600 transition-colors w-full">
               <Upload size={18} />
