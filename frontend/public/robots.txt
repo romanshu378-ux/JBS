@@ -1,7 +1,22 @@
+# Janki Ballabh Services — robots.txt
+# https://jankiballabhservices.in
+
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /admin/
-Disallow: /assets/
 
-Sitemap: https://jankiballabh.com/sitemap.xml
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+
+# Allow Google-specific crawlers full access
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: bingbot
+Allow: /
+
+# Sitemap location
+Sitemap: https://jankiballabhservices.in/sitemap.xml

@@ -1,6 +1,61 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import API from '../api/index.js';
+import SEOHead, { SITE } from '../hooks/useSEO.js';
+
+// ContactPage + LocalBusiness schema with full verified address
+const contactSchema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    '@id': `${SITE.domain}/contact#webpage`,
+    url: `${SITE.domain}/contact`,
+    name: 'Contact Janki Ballabh Services — Get a Free Quote',
+    description:
+      'Contact Janki Ballabh Services for industrial infrastructure, Solar EPC, pipeline laying, civil construction, and electrical work inquiries in Jaipur, Rajasthan.',
+    isPartOf: { '@id': `${SITE.domain}/#website` },
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home',    item: SITE.domain },
+        { '@type': 'ListItem', position: 2, name: 'Contact', item: `${SITE.domain}/contact` },
+      ],
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${SITE.domain}/#organization`,
+    name: SITE.name,
+    telephone: SITE.phone,
+    email: SITE.email,
+    taxID: SITE.gst,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura',
+      addressLocality: 'Jaipur',
+      addressRegion: 'Rajasthan',
+      postalCode: '302026',
+      addressCountry: 'IN',
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        opens: '09:00',
+        closes: '18:00',
+      },
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: SITE.phone,
+      contactType: 'customer service',
+      areaServed: ['IN'],
+      availableLanguage: ['Hindi', 'English'],
+    },
+    url: SITE.domain,
+  },
+];
 
 const Contact = () => {
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
@@ -22,104 +77,218 @@ const Contact = () => {
 
   return (
     <div className="pt-24 pb-20 bg-slate-50 min-h-screen">
+      {/* ── SEO Head ── */}
+      <SEOHead
+        title="Contact Us — Get a Free Quote for Industrial & Renewable Energy Services"
+        description="Contact Janki Ballabh Services in Jaipur, Rajasthan for Solar EPC, Water Pipeline, Civil Construction, Fiber Maintenance & Electrical work inquiries. Call +91 9079139959 or send us a message."
+        keywords="Contact Janki Ballabh Services, Industrial Services Inquiry Jaipur, Solar EPC Quote Rajasthan, Pipeline Contractor Contact, Civil Construction Inquiry Jaipur"
+        canonicalPath="/contact"
+        breadcrumbs={[
+          { name: 'Home',    path: '/' },
+          { name: 'Contact', path: '/contact' },
+        ]}
+        structuredData={contactSchema}
+      />
+
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        {/* ── Breadcrumb nav ── */}
+        <nav aria-label="Breadcrumb" className="text-sm text-slate-500 mb-6">
+          <ol className="flex items-center space-x-2">
+            <li><a href="/" className="hover:text-corporateBlue transition-colors">Home</a></li>
+            <li aria-hidden="true" className="text-slate-300">/</li>
+            <li className="text-corporateBlue font-medium">Contact</li>
+          </ol>
+        </nav>
+
+        <header className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-heading font-bold text-corporateBlue mb-4">Contact Us</h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Get in touch with us for your next industrial or renewable energy project. Our team is ready to provide expert solutions.</p>
-        </div>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">Get in touch with our team in Jaipur for your next industrial infrastructure or renewable energy project. We provide free consultations and site surveys.</p>
+        </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-          <div className="lg:col-span-1 space-y-8">
-            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-2xl font-bold text-corporateBlue mb-6">Contact Information</h3>
+          <aside className="lg:col-span-1 space-y-8">
+            <address className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 not-italic">
+              <h2 className="text-2xl font-bold text-corporateBlue mb-6">Contact Information</h2>
               
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <MapPin />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">Head Office</h4>
-                    <p className="text-slate-600">Janki Ballabh Services<br/>India</p>
+                    <h3 className="font-semibold text-slate-800 mb-1">Head Office</h3>
+                    <p className="text-slate-600 text-sm leading-relaxed">
+                      Plot No. D-32A, Narottampura,<br />
+                      Vastu Nagar Phase-3, Bad Ke Balaji,<br />
+                      Jaisinghpura, Jaipur,<br />
+                      Rajasthan — 302026, India
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <Phone />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">Phone Number</h4>
-                    <p className="text-slate-600">+91 9079139959</p>
+                    <h3 className="font-semibold text-slate-800 mb-1">Phone Number</h3>
+                    <a
+                      href="tel:+919079139959"
+                      className="text-slate-600 hover:text-corporateBlue transition-colors"
+                      aria-label="Call Janki Ballabh Services"
+                    >
+                      +91 9079139959
+                    </a>
                   </div>
                 </div>
 
                 <div className="flex items-start">
-                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4">
+                  <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <Mail />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">Email Address</h4>
-                    <p className="text-slate-600">Jankiballabh2510@gmail.com</p>
+                    <h3 className="font-semibold text-slate-800 mb-1">Email Address</h3>
+                    <a
+                      href="mailto:Jankiballabh2510@gmail.com"
+                      className="text-slate-600 hover:text-corporateBlue transition-colors break-all"
+                      aria-label="Email Janki Ballabh Services"
+                    >
+                      Jankiballabh2510@gmail.com
+                    </a>
                   </div>
                 </div>
+
+                <div className="pt-2 border-t border-gray-100">
+                  <h3 className="font-semibold text-slate-800 mb-1 text-sm">GST Number</h3>
+                  <p className="text-slate-500 text-sm font-mono">08GBBPS0582P1ZY</p>
+                </div>
               </div>
-            </div>
+            </address>
             
             <div className="bg-corporateBlue text-white p-8 rounded-lg shadow-sm">
               <h3 className="text-xl font-bold mb-4 text-corporateGold">Working Hours</h3>
-              <p className="mb-2 flex justify-between"><span>Mon - Sat:</span> <span>9:00 AM - 6:00 PM</span></p>
-              <p className="flex justify-between text-gray-400"><span>Sunday:</span> <span>Closed</span></p>
+              <p className="mb-2 flex justify-between text-sm"><span>Mon – Sat:</span> <span>9:00 AM – 6:00 PM</span></p>
+              <p className="flex justify-between text-gray-400 text-sm"><span>Sunday:</span> <span>Closed</span></p>
             </div>
-          </div>
+          </aside>
 
           <div className="lg:col-span-2 bg-white p-8 md:p-10 rounded-lg shadow-sm border border-gray-100">
-            <h3 className="text-2xl font-bold text-corporateBlue mb-6">Send an Inquiry</h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <h2 className="text-2xl font-bold text-corporateBlue mb-6">Send an Inquiry</h2>
+            <form
+              id="contact-form"
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              aria-label="Contact inquiry form"
+              noValidate
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
-                  <input required type="text" className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue" placeholder="John Doe" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                  <label htmlFor="contact-name" className="block text-sm font-medium text-slate-700 mb-2">
+                    Full Name <span aria-hidden="true" className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="contact-name"
+                    required
+                    type="text"
+                    autoComplete="name"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue"
+                    placeholder="John Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    aria-required="true"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                  <input required type="email" className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue" placeholder="john@example.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                  <label htmlFor="contact-email" className="block text-sm font-medium text-slate-700 mb-2">
+                    Email Address <span aria-hidden="true" className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="contact-email"
+                    required
+                    type="email"
+                    autoComplete="email"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    aria-required="true"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
-                  <input type="tel" className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue" placeholder="+91 0000000000" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                  <label htmlFor="contact-phone" className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+                  <input
+                    id="contact-phone"
+                    type="tel"
+                    autoComplete="tel"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue"
+                    placeholder="+91 0000000000"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Service Interested In</label>
-                  <select className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue" value={formData.subject} onChange={(e) => setFormData({...formData, subject: e.target.value})}>
+                  <label htmlFor="contact-service" className="block text-sm font-medium text-slate-700 mb-2">Service Interested In</label>
+                  <select
+                    id="contact-service"
+                    className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                    aria-label="Select the service you are interested in"
+                  >
                     <option value="">Select a service</option>
                     <option value="Water Pipeline Laying">Water Pipeline Laying</option>
                     <option value="Civil Construction">Civil Construction</option>
-                    <option value="Solar Piling">Solar Piling</option>
+                    <option value="Solar Piling & EPC">Solar Piling &amp; EPC</option>
                     <option value="Electrical Work">AC/DC Electrical Work</option>
+                    <option value="Fiber Maintenance">Fiber Maintenance</option>
+                    <option value="MMS Structure Work">MMS Structure Work</option>
                     <option value="Other">Other Inquiry</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Message</label>
-                <textarea required rows="5" className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue" placeholder="Tell us about your project requirements..." value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})}></textarea>
+                <label htmlFor="contact-message" className="block text-sm font-medium text-slate-700 mb-2">
+                  Message <span aria-hidden="true" className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="contact-message"
+                  required
+                  rows="5"
+                  className="w-full px-4 py-3 rounded-md border border-gray-200 focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue"
+                  placeholder="Tell us about your project requirements, location, and timeline..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({...formData, message: e.target.value})}
+                  aria-required="true"
+                ></textarea>
               </div>
-              <button disabled={isSubmitting} type="submit" className="bg-corporateBlue hover:bg-corporateBlue-light text-white font-semibold py-3 px-8 rounded-sm transition-colors flex items-center justify-center w-full md:w-auto">
-                {isSubmitting ? 'Sending...' : <><Send className="w-4 h-4 mr-2" /> Send Message</>}
+              <button
+                id="contact-submit"
+                disabled={isSubmitting}
+                type="submit"
+                aria-label="Submit your inquiry to Janki Ballabh Services"
+                className="bg-corporateBlue hover:bg-corporateBlue-light text-white font-semibold py-3 px-8 rounded-sm transition-colors flex items-center justify-center w-full md:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Sending...' : <><Send className="w-4 h-4 mr-2" aria-hidden="true" /> Send Message</>}
               </button>
             </form>
           </div>
         </div>
 
-        <div className="mt-16 bg-gray-200 w-full h-[400px] rounded-lg overflow-hidden relative">
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-800 text-white flex-col">
-             <MapPin size={48} className="text-corporateGold mb-4" />
-             <h3 className="text-2xl font-bold">Google Maps Integration</h3>
-             <p className="text-slate-400 mt-2">Embed your Google Maps iframe here</p>
-          </div>
+        {/* ── Google Maps ── */}
+        <div className="mt-16 rounded-lg overflow-hidden shadow-sm border border-gray-100" style={{ height: '400px' }}>
+          <iframe
+            title="Janki Ballabh Services office location — Jaipur, Rajasthan"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2!2d75.7479!3d26.8318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDQ5JzU0LjUiTiA3NcKwNDQnNTIuNSJF!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin"
+            width="100%"
+            height="400"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            aria-label="Google Maps showing Janki Ballabh Services location in Jaipur, Rajasthan"
+          ></iframe>
         </div>
       </div>
     </div>

@@ -1,41 +1,56 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
-    <!-- Remove vite.svg to not expose the tech stack; use a proper favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0B192C" />
 
-    <!-- Primary SEO -->
-    <title>Janki Ballabh Services | Industrial Infrastructure</title>
-    <meta name="description" content="Premier industrial services, pipeline construction, and solar energy solutions delivered with uncompromising safety and innovation." />
-    <meta name="keywords" content="Industrial Infrastructure, Civil Construction, Solar Piling, Pipeline Laying, Electrical Work" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://jankiballabh.com" />
+    <!-- ── Primary SEO (defaults; overridden per-page by react-helmet-async) ── -->
+    <title>Janki Ballabh Services | Industrial Infrastructure & Renewable Energy Solutions</title>
+    <meta name="description" content="Janki Ballabh Services — premier industrial infrastructure company in Jaipur, Rajasthan. Experts in Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance & AC/DC Electrical work." />
+    <meta name="keywords" content="Industrial Construction Company Jaipur, Solar EPC Company Rajasthan, Pipeline Contractor Jaipur, Industrial Infrastructure Rajasthan, Fiber Maintenance Company, Electrical Contractor Rajasthan, Civil Construction Company Jaipur" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="Janki Ballabh Services" />
+    <meta name="geo.region" content="IN-RJ" />
+    <meta name="geo.placename" content="Jaipur, Rajasthan" />
+    <meta name="geo.position" content="26.8318;75.7479" />
+    <meta name="ICBM" content="26.8318, 75.7479" />
+    <link rel="canonical" href="https://jankiballabhservices.in" />
 
-    <!-- Open Graph / Social Sharing -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://jankiballabh.com" />
-    <meta property="og:title" content="Janki Ballabh Services | Industrial Infrastructure" />
-    <meta property="og:description" content="Premier industrial services, pipeline construction, and solar energy solutions." />
-    <meta property="og:image" content="https://jankiballabh.com/og-image.jpg" />
-    <meta property="og:image:width" content="1200" />
+    <!-- ── Hreflang ── -->
+    <link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in" />
+    <link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in" />
+
+    <!-- ── Open Graph ── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:url"         content="https://jankiballabhservices.in" />
+    <meta property="og:title"       content="Janki Ballabh Services | Industrial Infrastructure & Renewable Energy" />
+    <meta property="og:description" content="Premier industrial services in Jaipur — Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance & Electrical Contractor in Rajasthan." />
+    <meta property="og:image"       content="https://jankiballabhservices.in/og-image.jpg" />
+    <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="Janki Ballabh Services" />
-    <meta property="og:locale" content="en_IN" />
+    <meta property="og:image:alt"   content="Janki Ballabh Services — Industrial Infrastructure Jaipur" />
+    <meta property="og:site_name"   content="Janki Ballabh Services" />
+    <meta property="og:locale"      content="en_IN" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://jankiballabh.com" />
-    <meta name="twitter:title" content="Janki Ballabh Services | Industrial Infrastructure" />
-    <meta name="twitter:description" content="Premier industrial services, pipeline construction, and solar energy solutions." />
-    <meta name="twitter:image" content="https://jankiballabh.com/og-image.jpg" />
+    <!-- ── Twitter Card ── -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:url"         content="https://jankiballabhservices.in" />
+    <meta name="twitter:title"       content="Janki Ballabh Services | Industrial Infrastructure & Renewable Energy" />
+    <meta name="twitter:description" content="Premier industrial services in Jaipur — Solar EPC, Pipeline, Civil Construction, Fiber Maintenance & Electrical work." />
+    <meta name="twitter:image"       content="https://jankiballabhservices.in/og-image.jpg" />
+    <meta name="twitter:image:alt"   content="Janki Ballabh Services — Industrial Infrastructure Jaipur" />
 
-    <!-- Google Fonts: preconnect for DNS + TLS warmup, then async load -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- ── Performance: DNS Prefetch & Preconnect ── -->
+    <link rel="dns-prefetch" href="https://jbs-pazg.onrender.com" />
+    <link rel="preconnect"   href="https://jbs-pazg.onrender.com" crossorigin />
+    <link rel="preconnect"   href="https://fonts.googleapis.com" />
+    <link rel="preconnect"   href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
+    <!-- ── Google Fonts: async load, noscript fallback ── -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap"
       rel="preload"
@@ -49,7 +64,7 @@
       />
     </noscript>
 
-    <!-- Preload Hero Image for LCP improvement (fetchpriority=high tells browser this is critical) -->
+    <!-- ── Preload Hero Image for LCP (fetchpriority=high = critical resource) ── -->
     <link
       rel="preload"
       as="image"
@@ -57,27 +72,88 @@
       fetchpriority="high"
     />
 
-    <!-- Structured Data JSON-LD -->
+    <!-- ── Structured Data: Organization + LocalBusiness ── -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
+      "@type": ["LocalBusiness", "Organization"],
+      "@id": "https://jankiballabhservices.in/#organization",
       "name": "Janki Ballabh Services",
-      "image": "https://jankiballabh.com/og-image.jpg",
-      "url": "https://jankiballabh.com",
+      "alternateName": "JBS",
+      "url": "https://jankiballabhservices.in",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://jankiballabhservices.in/favicon.ico",
+        "width": 512,
+        "height": 512
+      },
+      "image": "https://jankiballabhservices.in/og-image.jpg",
+      "description": "Janki Ballabh Services is a premier industrial infrastructure and renewable energy company in Jaipur, Rajasthan, specialising in Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance, and AC/DC Electrical work.",
       "telephone": "+919079139959",
+      "email": "Jankiballabh2510@gmail.com",
+      "taxID": "08GBBPS0582P1ZY",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Industrial Area",
+        "streetAddress": "Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura",
         "addressLocality": "Jaipur",
         "addressRegion": "Rajasthan",
-        "postalCode": "302001",
+        "postalCode": "302026",
         "addressCountry": "IN"
       },
-      "description": "Premier industrial services, pipeline construction, and solar energy solutions delivered with uncompromising safety and innovation.",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "26.8318",
+        "longitude": "75.7479"
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        }
+      ],
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+919079139959",
+          "contactType": "customer service",
+          "areaServed": ["IN"],
+          "availableLanguage": ["Hindi","English"]
+        }
+      ],
+      "hasMap": "https://www.google.com/maps/search/Jaipur+Rajasthan+302026",
+      "priceRange": "$$",
+      "additionalType": [
+        "https://schema.org/GeneralContractor",
+        "https://schema.org/HomeAndConstructionBusiness"
+      ],
       "sameAs": [
         "https://www.linkedin.com/company/jankiballabh"
-      ]
+      ],
+      "keywords": "Industrial Construction Jaipur, Solar EPC Rajasthan, Pipeline Contractor Jaipur, Electrical Contractor Rajasthan, Civil Construction Company Jaipur"
+    }
+    </script>
+
+    <!-- ── Structured Data: WebSite ── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://jankiballabhservices.in/#website",
+      "url": "https://jankiballabhservices.in",
+      "name": "Janki Ballabh Services",
+      "description": "Industrial Infrastructure & Renewable Energy Solutions",
+      "publisher": { "@id": "https://jankiballabhservices.in/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://jankiballabhservices.in/services?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      },
+      "inLanguage": "en-IN"
     }
     </script>
   </head>
@@ -86,4 +162,3 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-

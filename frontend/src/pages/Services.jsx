@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Factory, Zap, Droplets, HardHat, Building2, Sun, ArrowRight } from 'lucide-react';
 import { cachedGet, getImageUrl } from '../api/index.js';
 import SkeletonCard from '../components/SkeletonCard';
+import SEOHead, { SITE } from '../hooks/useSEO.js';
 
 const PLACEHOLDER_IMAGE =
   'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=60';
@@ -21,12 +22,15 @@ const ServiceCard = memo(({ service }) => {
   const imageUrl = getImageUrl(service.image, '');
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
+    <article className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
       {imageUrl ? (
         <img
           loading="lazy"
+          decoding="async"
           src={imageUrl}
-          alt={service.title || 'Service image'}
+          alt={`${service.title} — industrial service by Janki Ballabh Services`}
+          width="800"
+          height="480"
           className="w-full h-48 object-cover rounded-md mb-6"
           onError={(e) => {
             e.currentTarget.onerror = null;
@@ -34,7 +38,7 @@ const ServiceCard = memo(({ service }) => {
           }}
         />
       ) : (
-        <div className="text-corporateGold mb-6">
+        <div className="text-corporateGold mb-6" aria-hidden="true">
           {iconMap[service.icon] || <HardHat size={40} />}
         </div>
       )}
@@ -44,11 +48,12 @@ const ServiceCard = memo(({ service }) => {
       </p>
       <Link
         to={`/services/${service.slug}`}
+        aria-label={`Read more about our ${service.title} service`}
         className="text-corporateBlue font-semibold flex items-center hover:text-corporateGold transition-colors"
       >
-        Read More <ArrowRight className="ml-2 w-4 h-4" />
+        Read More <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
       </Link>
-    </div>
+    </article>
   );
 });
 
@@ -84,14 +89,52 @@ const Services = () => {
     return () => { cancelled = true; };
   }, []);
 
+  // Build ItemList schema from services
+  const servicesListSchema = services.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Industrial Services by Janki Ballabh Services',
+    description: 'Comprehensive list of industrial infrastructure and renewable energy services offered by Janki Ballabh Services in Jaipur, Rajasthan.',
+    numberOfItems: services.length,
+    itemListElement: services.map((service, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: service.title,
+      url: `${SITE.domain}/services/${service.slug}`,
+      description: service.shortDescription || service.description,
+    })),
+  } : null;
+
   return (
     <div className="pt-24 pb-20 bg-slate-50 min-h-screen">
+      {/* ── SEO Head ── */}
+      <SEOHead
+        title="Our Services — Solar EPC, Pipeline, Civil Construction & Electrical Work Jaipur"
+        description="Explore Janki Ballabh Services' complete range of industrial services — Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance, MMS Structure Work & AC/DC Electrical work in Jaipur, Rajasthan."
+        keywords="Solar EPC Services Jaipur, Water Pipeline Laying Rajasthan, Civil Construction Company Jaipur, Fiber Maintenance Services, Electrical Contractor Rajasthan, MMS Structure Work, Industrial Services Jaipur"
+        canonicalPath="/services"
+        breadcrumbs={[
+          { name: 'Home',     path: '/' },
+          { name: 'Services', path: '/services' },
+        ]}
+        structuredData={servicesListSchema ? [servicesListSchema] : []}
+      />
+
       <div className="container mx-auto px-4">
+        {/* ── Breadcrumb nav ── */}
+        <nav aria-label="Breadcrumb" className="text-sm text-slate-500 mb-6">
+          <ol className="flex items-center space-x-2">
+            <li><a href="/" className="hover:text-corporateBlue transition-colors">Home</a></li>
+            <li aria-hidden="true" className="text-slate-300">/</li>
+            <li className="text-corporateBlue font-medium">Services</li>
+          </ol>
+        </nav>
+
         <h1 className="text-4xl md:text-5xl font-heading font-bold text-corporateBlue mb-4 text-center">
-          Our Services
+          Our Industrial Services
         </h1>
         <p className="text-lg text-slate-600 max-w-2xl mx-auto text-center mb-16">
-          Comprehensive industrial and renewable energy solutions delivered with expertise and precision.
+          Comprehensive industrial infrastructure and renewable energy solutions delivered with expertise and precision across Jaipur, Rajasthan and India.
         </p>
 
         {loading ? (
@@ -101,8 +144,8 @@ const Services = () => {
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-16">
-            <div className="text-slate-400 mb-4">
+          <div className="text-center py-16" role="alert">
+            <div className="text-slate-400 mb-4" aria-hidden="true">
               <HardHat size={48} className="mx-auto" />
             </div>
             <p className="text-slate-600 text-lg font-medium mb-4">{error}</p>
@@ -115,7 +158,7 @@ const Services = () => {
           </div>
         ) : services.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-slate-300 mb-4">
+            <div className="text-slate-300 mb-4" aria-hidden="true">
               <HardHat size={48} className="mx-auto" />
             </div>
             <p className="text-slate-500 text-xl font-medium">No services available at this time.</p>

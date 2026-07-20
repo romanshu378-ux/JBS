@@ -1,33 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+
+  <!-- Home -->
   <url>
-    <loc>https://jankiballabh.com/</loc>
+    <loc>https://jankiballabhservices.in/</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/" />
+    <image:image>
+      <image:loc>https://jankiballabhservices.in/og-image.jpg</image:loc>
+      <image:title>Janki Ballabh Services — Industrial Infrastructure Jaipur</image:title>
+      <image:caption>Premier industrial infrastructure and renewable energy company in Jaipur, Rajasthan</image:caption>
+    </image:image>
   </url>
+
+  <!-- About -->
   <url>
-    <loc>https://jankiballabh.com/about</loc>
+    <loc>https://jankiballabhservices.in/about</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/about" />
   </url>
+
+  <!-- Services listing -->
   <url>
-    <loc>https://jankiballabh.com/services</loc>
+    <loc>https://jankiballabhservices.in/services</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/services" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/services" />
+  </url>
+
+  <!-- Service detail pages (dynamic — add slugs as services are created in CMS) -->
+  <url>
+    <loc>https://jankiballabhservices.in/services/water-pipeline-laying</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://jankiballabh.com/projects</loc>
+    <loc>https://jankiballabhservices.in/services/civil-construction</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jankiballabhservices.in/services/solar-piling-epc</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jankiballabhservices.in/services/fiber-maintenance</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jankiballabhservices.in/services/mms-structure-work</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://jankiballabhservices.in/services/electrical-work</loc>
+    <lastmod>2026-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Projects -->
+  <url>
+    <loc>https://jankiballabhservices.in/projects</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/projects" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/projects" />
   </url>
+
+  <!-- Team -->
   <url>
-    <loc>https://jankiballabh.com/team</loc>
+    <loc>https://jankiballabhservices.in/team</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/team" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/team" />
   </url>
+
+  <!-- Contact -->
   <url>
-    <loc>https://jankiballabh.com/contact</loc>
+    <loc>https://jankiballabhservices.in/contact</loc>
+    <lastmod>2026-07-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://jankiballabhservices.in/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jankiballabhservices.in/contact" />
   </url>
+
 </urlset>
