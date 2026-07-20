@@ -1,18 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
-import API from '../api/index.js';
+import API, { cachedGet } from '../api/index.js';
 import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 // ContactPage + LocalBusiness schema with full verified address
-const contactSchema = [
+const buildContactSchema = (settings) => [
   {
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     '@id': `${SITE.domain}/contact#webpage`,
     url: `${SITE.domain}/contact`,
-    name: 'Contact Janki Ballabh Services — Get a Free Quote',
+    name: `Contact ${settings?.company_name || SITE.name} — Get a Free Quote`,
     description:
-      'Contact Janki Ballabh Services for industrial infrastructure, Solar EPC, pipeline laying, civil construction, and electrical work inquiries in Jaipur, Rajasthan.',
+      `Contact ${settings?.company_name || SITE.name} for industrial infrastructure, Solar EPC, pipeline laying, civil construction, and electrical work inquiries in Jaipur, Rajasthan.`,
     isPartOf: { '@id': `${SITE.domain}/#website` },
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -26,17 +26,17 @@ const contactSchema = [
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${SITE.domain}/#organization`,
-    name: SITE.name,
-    telephone: SITE.phone,
-    email: SITE.email,
-    taxID: SITE.gst,
+    name: settings?.company_name || SITE.name,
+    telephone: settings?.phone    || SITE.phone,
+    email:     settings?.email    || SITE.email,
+    taxID:     SITE.gst,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura',
+      streetAddress:   'Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura',
       addressLocality: 'Jaipur',
-      addressRegion: 'Rajasthan',
-      postalCode: '302026',
-      addressCountry: 'IN',
+      addressRegion:   'Rajasthan',
+      postalCode:      '302026',
+      addressCountry:  'IN',
     },
     openingHoursSpecification: [
       {
@@ -48,9 +48,9 @@ const contactSchema = [
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: SITE.phone,
-      contactType: 'customer service',
-      areaServed: ['IN'],
+      telephone:    settings?.phone || SITE.phone,
+      contactType:  'customer service',
+      areaServed:   ['IN'],
       availableLanguage: ['Hindi', 'English'],
     },
     url: SITE.domain,
@@ -58,8 +58,24 @@ const contactSchema = [
 ];
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+  const [formData, setFormData]   = useState({ name: '', email: '', phone: '', subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [settings, setSettings]   = useState(null);
+
+  // ── Load settings (phone / email / address) ──────────────────────────────
+  useEffect(() => {
+    let cancelled = false;
+    const fetchSettings = async () => {
+      try {
+        const res = await cachedGet('/settings');
+        if (!cancelled) setSettings(res.data.data);
+      } catch (_err) {
+        // Non-critical — fall back to SITE constants below
+      }
+    };
+    fetchSettings();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,19 +91,24 @@ const Contact = () => {
     }
   };
 
+  // Resolve dynamic values with SITE fallbacks
+  const phone   = settings?.phone   || SITE.phone;
+  const email   = settings?.email   || SITE.email;
+  const address = settings?.address || `${SITE.address.streetAddress}, ${SITE.address.addressLocality}, ${SITE.address.addressRegion} ${SITE.address.postalCode}`;
+
   return (
     <div className="pt-24 pb-20 bg-slate-50 min-h-screen">
       {/* ── SEO Head ── */}
       <SEOHead
         title="Contact Us — Get a Free Quote for Industrial & Renewable Energy Services"
-        description="Contact Janki Ballabh Services in Jaipur, Rajasthan for Solar EPC, Water Pipeline, Civil Construction, Fiber Maintenance & Electrical work inquiries. Call +91 9079139959 or send us a message."
+        description={`Contact ${settings?.company_name || SITE.name} in Jaipur, Rajasthan for Solar EPC, Water Pipeline, Civil Construction, Fiber Maintenance & Electrical work inquiries. Call ${phone} or send us a message.`}
         keywords="Contact Janki Ballabh Services, Industrial Services Inquiry Jaipur, Solar EPC Quote Rajasthan, Pipeline Contractor Contact, Civil Construction Inquiry Jaipur"
         canonicalPath="/contact"
         breadcrumbs={[
           { name: 'Home',    path: '/' },
           { name: 'Contact', path: '/contact' },
         ]}
-        structuredData={contactSchema}
+        structuredData={buildContactSchema(settings)}
       />
 
       <div className="container mx-auto px-4">
@@ -109,23 +130,20 @@ const Contact = () => {
           <aside className="lg:col-span-1 space-y-8">
             <address className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 not-italic">
               <h2 className="text-2xl font-bold text-corporateBlue mb-6">Contact Information</h2>
-              
+
               <div className="space-y-6">
+                {/* Address */}
                 <div className="flex items-start">
                   <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <MapPin />
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-800 mb-1">Head Office</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">
-                      Plot No. D-32A, Narottampura,<br />
-                      Vastu Nagar Phase-3, Bad Ke Balaji,<br />
-                      Jaisinghpura, Jaipur,<br />
-                      Rajasthan — 302026, India
-                    </p>
+                    <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{address}</p>
                   </div>
                 </div>
 
+                {/* Phone */}
                 <div className="flex items-start">
                   <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <Phone />
@@ -133,15 +151,16 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-slate-800 mb-1">Phone Number</h3>
                     <a
-                      href="tel:+919079139959"
+                      href={`tel:${phone.replace(/\s+/g, '')}`}
                       className="text-slate-600 hover:text-corporateBlue transition-colors"
-                      aria-label="Call Janki Ballabh Services"
+                      aria-label={`Call ${settings?.company_name || SITE.name}`}
                     >
-                      +91 9079139959
+                      {phone}
                     </a>
                   </div>
                 </div>
 
+                {/* Email */}
                 <div className="flex items-start">
                   <div className="w-12 h-12 bg-corporateBlue/5 rounded-full flex items-center justify-center text-corporateBlue flex-shrink-0 mr-4" aria-hidden="true">
                     <Mail />
@@ -149,22 +168,22 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-slate-800 mb-1">Email Address</h3>
                     <a
-                      href="mailto:Jankiballabh2510@gmail.com"
+                      href={`mailto:${email}`}
                       className="text-slate-600 hover:text-corporateBlue transition-colors break-all"
-                      aria-label="Email Janki Ballabh Services"
+                      aria-label={`Email ${settings?.company_name || SITE.name}`}
                     >
-                      Jankiballabh2510@gmail.com
+                      {email}
                     </a>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-gray-100">
                   <h3 className="font-semibold text-slate-800 mb-1 text-sm">GST Number</h3>
-                  <p className="text-slate-500 text-sm font-mono">08GBBPS0582P1ZY</p>
+                  <p className="text-slate-500 text-sm font-mono">{SITE.gst}</p>
                 </div>
               </div>
             </address>
-            
+
             <div className="bg-corporateBlue text-white p-8 rounded-lg shadow-sm">
               <h3 className="text-xl font-bold mb-4 text-corporateGold">Working Hours</h3>
               <p className="mb-2 flex justify-between text-sm"><span>Mon – Sat:</span> <span>9:00 AM – 6:00 PM</span></p>
@@ -267,7 +286,7 @@ const Contact = () => {
                 id="contact-submit"
                 disabled={isSubmitting}
                 type="submit"
-                aria-label="Submit your inquiry to Janki Ballabh Services"
+                aria-label={`Submit your inquiry to ${settings?.company_name || SITE.name}`}
                 className="bg-corporateBlue hover:bg-corporateBlue-light text-white font-semibold py-3 px-8 rounded-sm transition-colors flex items-center justify-center w-full md:w-auto disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Sending...' : <><Send className="w-4 h-4 mr-2" aria-hidden="true" /> Send Message</>}
@@ -279,15 +298,18 @@ const Contact = () => {
         {/* ── Google Maps ── */}
         <div className="mt-16 rounded-lg overflow-hidden shadow-sm border border-gray-100" style={{ height: '400px' }}>
           <iframe
-            title="Janki Ballabh Services office location — Jaipur, Rajasthan"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2!2d75.7479!3d26.8318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDQ5JzU0LjUiTiA3NcKwNDQnNTIuNSJF!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin"
+            title={`${settings?.company_name || SITE.name} office location — Jaipur, Rajasthan`}
+            src={
+              settings?.google_map_embed ||
+              'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2!2d75.7479!3d26.8318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDQ5JzU0LjUiTiA3NcKwNDQnNTIuNSJF!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin'
+            }
             width="100%"
             height="400"
             style={{ border: 0 }}
             allowFullScreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            aria-label="Google Maps showing Janki Ballabh Services location in Jaipur, Rajasthan"
+            aria-label={`Google Maps showing ${settings?.company_name || SITE.name} location in Jaipur, Rajasthan`}
           ></iframe>
         </div>
       </div>

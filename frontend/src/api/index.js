@@ -35,12 +35,16 @@ export const getImageUrl = (imagePath, fallback = '') => {
 };
 
 // ─── In-Memory API Cache ──────────────────────────────────────────────────────
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const CACHE_MAX_SIZE = 50;           // max entries before evicting oldest
-const cache = new Map();             // key: url, value: { data, expiresAt }
+// Routes that must NEVER be cached (always fresh from DB)
+const NO_CACHE_ROUTES = new Set(['/settings']);
+
+const CACHE_TTL_MS  = 5 * 60 * 1000; // 5 minutes for most routes
+const CACHE_MAX_SIZE = 50;            // max entries before evicting oldest
+const cache = new Map();              // key: url, value: { response, expiresAt }
 
 /**
  * Cached GET request. Returns cached response when available and fresh.
+ * Routes listed in NO_CACHE_ROUTES always bypass the cache.
  * Accepts an optional AbortController signal for request cancellation.
  *
  * @param {string} url    - API endpoint (e.g. '/services')
@@ -48,7 +52,12 @@ const cache = new Map();             // key: url, value: { data, expiresAt }
  * @returns {Promise<{ data: any }>}
  */
 export const cachedGet = async (url, config = {}) => {
-  const now = Date.now();
+  // Settings must always be fresh — admin changes must appear immediately
+  if (NO_CACHE_ROUTES.has(url)) {
+    return API.get(url, config);
+  }
+
+  const now    = Date.now();
   const cached = cache.get(url);
 
   if (cached && now < cached.expiresAt) {
@@ -72,5 +81,10 @@ export const cachedGet = async (url, config = {}) => {
  * @param {string} url
  */
 export const invalidateCache = (url) => cache.delete(url);
+
+/**
+ * Clear the entire cache (useful after bulk updates).
+ */
+export const clearCache = () => cache.clear();
 
 export default API;

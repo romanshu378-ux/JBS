@@ -91,8 +91,8 @@ const Home = () => {
     <div className="w-full overflow-hidden">
       {/* ── SEO Head ── */}
       <SEOHead
-        title="Industrial Infrastructure & Renewable Energy Solutions in Jaipur"
-        description="Janki Ballabh Services — leading industrial construction company in Jaipur, Rajasthan. Experts in Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance & Electrical work. Get a free quote today."
+        title={settings?.seo_meta_title || "Industrial Infrastructure & Renewable Energy Solutions in Jaipur"}
+        description={settings?.seo_meta_description || "Janki Ballabh Services — leading industrial construction company in Jaipur, Rajasthan. Experts in Solar EPC, Water Pipeline Laying, Civil Construction, Fiber Maintenance & Electrical work. Get a free quote today."}
         keywords="Industrial Construction Company Jaipur, Solar EPC Company Rajasthan, Pipeline Contractor Jaipur, Industrial Infrastructure Rajasthan, Fiber Maintenance Company, Electrical Contractor Rajasthan, Civil Construction Jaipur"
         canonicalPath="/"
         breadcrumbs={[{ name: 'Home', path: '/' }]}
@@ -129,7 +129,7 @@ const Home = () => {
               </span>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold text-white leading-tight mb-6">
                 {settings?.hero_title ? (
-                  <span dangerouslySetInnerHTML={{ __html: settings.hero_title.replace('Infrastructure', '<span class="text-gradient-gold">Infrastructure</span>') }} />
+                  settings.hero_title
                 ) : (
                   <>Building Reliable <span className="text-gradient-gold">Infrastructure</span> &amp; Renewable Solutions</>
                 )}
