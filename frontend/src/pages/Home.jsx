@@ -135,7 +135,7 @@ const Home = () => {
                 )}
               </h1>
               <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed">
-                {settings?.hero_subtitle || 'Professional pipeline, construction, solar and industrial services delivered with uncompromised safety, innovation and unmatched quality across Rajasthan and India.'}
+                {settings?.hero_subtitle || 'Janki Ballabh Services delivers EV Fast Charging, Solar Energy, Electrical, Civil, and Turnkey Engineering Solutions with quality, safety, and reliability..'}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">
