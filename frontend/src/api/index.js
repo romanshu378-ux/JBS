@@ -36,13 +36,15 @@ export const getImageUrl = (imagePath, fallback = '') => {
 
 // ─── In-Memory API Cache ──────────────────────────────────────────────────────
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-const cache = new Map(); // key: url, value: { data, expiresAt }
+const CACHE_MAX_SIZE = 50;           // max entries before evicting oldest
+const cache = new Map();             // key: url, value: { data, expiresAt }
 
 /**
  * Cached GET request. Returns cached response when available and fresh.
+ * Accepts an optional AbortController signal for request cancellation.
  *
- * @param {string} url - API endpoint (e.g. '/services')
- * @param {object} [config] - optional axios config
+ * @param {string} url    - API endpoint (e.g. '/services')
+ * @param {object} config - optional axios config (e.g. { signal: controller.signal })
  * @returns {Promise<{ data: any }>}
  */
 export const cachedGet = async (url, config = {}) => {
@@ -54,6 +56,13 @@ export const cachedGet = async (url, config = {}) => {
   }
 
   const response = await API.get(url, config);
+
+  // Evict oldest entry if cache is at capacity
+  if (cache.size >= CACHE_MAX_SIZE) {
+    const oldestKey = cache.keys().next().value;
+    cache.delete(oldestKey);
+  }
+
   cache.set(url, { response, expiresAt: now + CACHE_TTL_MS });
   return response;
 };

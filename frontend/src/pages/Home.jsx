@@ -22,6 +22,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchHomeData = async () => {
       try {
         const [servicesRes, projectsRes, galleryRes, testimonialsRes, settingsRes] = await Promise.all([
@@ -31,20 +33,23 @@ const Home = () => {
           cachedGet('/testimonials'),
           cachedGet('/settings')
         ]);
-        
-        setServices(servicesRes.data.data.slice(0, 6)); // Display max 6 services on home
-        setProjects(projectsRes.data.data.slice(0, 6)); // Display max 6 projects
-        setGallery(galleryRes.data.data.slice(0, 6)); // Display max 6 gallery items
-        setTestimonials(testimonialsRes.data.data.slice(0, 3)); // Display max 3 testimonials
+
+        if (cancelled) return;
+
+        setServices(servicesRes.data.data.slice(0, 6));
+        setProjects(projectsRes.data.data.slice(0, 6));
+        setGallery(galleryRes.data.data.slice(0, 6));
+        setTestimonials(testimonialsRes.data.data.slice(0, 3));
         setSettings(settingsRes.data.data);
-      } catch (error) {
-        console.error('Error fetching home data:', error);
+      } catch (_err) {
+        // silently handled; loading state is cleared in finally
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchHomeData();
+    return () => { cancelled = true; };
   }, []);
 
   const partners = ['L&T India', 'Waaree Renewable Energy', 'Tata Projects', 'Adani Infrastructure'];
@@ -54,7 +59,7 @@ const Home = () => {
       <section className="relative h-screen min-h-[600px] flex items-center">
         <div className="absolute inset-0 bg-slate-900">
           <div className="absolute inset-0 bg-gradient-to-r from-corporateBlue/90 to-corporateBlue/40 z-10"></div>
-          <img src="https://images.unsplash.com/photo-1518314916381-77a37c2a49ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80" alt="Industrial construction" className="w-full h-full object-cover opacity-60" />
+          <img src="https://images.unsplash.com/photo-1518314916381-77a37c2a49ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=75" alt="Industrial construction" className="w-full h-full object-cover opacity-60" fetchPriority="high" />
         </div>
         
         <div className="container mx-auto px-4 relative z-20">

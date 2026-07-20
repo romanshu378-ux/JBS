@@ -51,9 +51,8 @@ const Projects = () => {
         if (!cancelled) {
           setProjects(Array.isArray(data.data) ? data.data : []);
         }
-      } catch (err) {
+      } catch (_err) {
         if (!cancelled) {
-          console.error('Error fetching projects:', err);
           setError('Unable to load projects. Please check your connection and try again.');
         }
       } finally {

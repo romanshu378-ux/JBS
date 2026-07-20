@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import API, { BASE_URL } from '../api/index.js';
+import { cachedGet, BASE_URL } from '../api/index.js';
+
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -19,16 +20,20 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchSettings = async () => {
       try {
-        const { data } = await API.get('/settings');
-        setSettings(data.data);
-      } catch (error) {
-        console.error('Error fetching settings:', error);
+        const { data } = await cachedGet('/settings');
+        if (!cancelled) setSettings(data.data);
+      } catch (_err) {
+        // silently handled — navbar falls back to hardcoded defaults
       }
     };
     fetchSettings();
+    return () => { cancelled = true; };
   }, []);
+
 
   const navLinks = [
     { name: 'Home', path: '/' },

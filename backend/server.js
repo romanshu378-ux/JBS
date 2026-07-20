@@ -11,32 +11,108 @@ dotenv.config();
 const app = express();
 
 // ===============================
-// MIDDLEWARE
+// SECURITY MIDDLEWARE
 // ===============================
 
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
-app.use(helmet({
-  crossOriginResourcePolicy: false,
-}));
+// Explicitly remove X-Powered-By to not leak Express info
+app.disable('x-powered-by');
 
-app.use(compression());
+// Helmet: security headers suite
+app.use(
+  helmet({
+    // Allow cross-origin resources (needed for Render-hosted uploads)
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
 
+    // Content Security Policy — backend API responses; not a browser app so permissive
+    contentSecurityPolicy: false,
+
+    // HSTS — enforce HTTPS on Render
+    strictTransportSecurity: {
+      maxAge: 63072000,
+      includeSubDomains: true,
+      preload: true,
+    },
+
+    // Prevent MIME-type sniffing
+    noSniff: true,
+
+    // Prevent clickjacking
+    frameguard: { action: 'deny' },
+
+    // Hide server details
+    hidePoweredBy: true,
+
+    // Referrer policy
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  })
+);
+
+// Compression: Brotli-first, Gzip fallback (threshold: 1KB)
+app.use(compression({ threshold: 1024 }));
+
+// ── Rate Limiters ─────────────────────────────────────────────────────────────
+
+// General API limiter: 100 requests per 15 minutes
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  message: { success: false, message: 'Too many requests. Please try again later.' },
 });
+
+// Strict limiter for auth routes: 10 requests per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many authentication attempts. Please try again later.' },
+});
+
 app.use('/api', limiter);
 
-app.use(cors());
+// ── CORS ───────────────────────────────────────────────────────────────────────
+const ALLOWED_ORIGINS = [
+  'https://jankiballabh.com',
+  'https://www.jankiballabh.com',
+  // Allow Vercel preview deployments
+  /\.vercel\.app$/,
+  // Allow localhost for local development
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+];
 
-app.use(express.json());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
 
-app.use(express.urlencoded({ extended: true }));
+      const allowed = ALLOWED_ORIGINS.some((o) =>
+        o instanceof RegExp ? o.test(origin) : o === origin
+      );
+
+      if (allowed) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: Origin '${origin}' not allowed`));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+app.use(express.json({ limit: '10mb' }));
+
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ===============================
 // UPLOADS FOLDER SETUP
@@ -79,7 +155,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 // API ROUTES
 // ===============================
 
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 
 app.use('/api/services', serviceRoutes);
 app.use('/api/service-categories', serviceCategoryRoutes);
@@ -171,19 +247,25 @@ const startServer = async () => {
 
     await connection.end();
 
-    console.log('Database connection successful.');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Database connection successful.');
+    }
 
     // SEQUELIZE CONNECT
 
     await sequelize.authenticate();
 
-    console.log('MySQL connected via Sequelize.');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('MySQL connected via Sequelize.');
+    }
 
     // DATABASE SYNC
 
     await sequelize.sync();
 
-    console.log('All models synchronized successfully.');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('All models synchronized successfully.');
+    }
 
     // SEED DATABASE
 
@@ -198,6 +280,7 @@ const startServer = async () => {
       console.log(`Server running on port ${PORT}`);
 
     });
+
 
   } catch (error) {
 

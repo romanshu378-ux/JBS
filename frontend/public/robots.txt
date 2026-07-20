@@ -2,6 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
-Disallow: /uploads/
+Disallow: /assets/
 
 Sitemap: https://jankiballabh.com/sitemap.xml

@@ -71,9 +71,8 @@ const Services = () => {
         if (!cancelled) {
           setServices(Array.isArray(data.data) ? data.data : []);
         }
-      } catch (err) {
+      } catch (_err) {
         if (!cancelled) {
-          console.error('Error fetching services:', err);
           setError('Unable to load services. Please check your connection and try again.');
         }
       } finally {

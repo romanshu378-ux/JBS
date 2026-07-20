@@ -25,9 +25,14 @@ const ServiceDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchService = async () => {
       try {
         const { data } = await API.get(`/services/${slug}`);
+
+        if (cancelled) return;
+
         setService(data.data);
         
         if (data.data) {
@@ -35,16 +40,18 @@ const ServiceDetails = () => {
           document.querySelector('meta[name="description"]')?.setAttribute("content", data.data.seoDescription || "");
           document.querySelector('meta[name="keywords"]')?.setAttribute("content", data.data.seoKeywords || "");
         }
-      } catch (e) {
-        console.error(e);
+      } catch (_e) {
+        // silently handled — component renders 'Service Not Found' when service is null
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     
     fetchService();
     window.scrollTo(0, 0);
+    return () => { cancelled = true; };
   }, [slug]);
+
 
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="w-12 h-12 border-4 border-slate-200 border-t-corporateBlue rounded-full animate-spin"></div></div>;
   if (!service) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><h1 className="text-2xl text-slate-500 font-bold">Service Not Found</h1></div>;

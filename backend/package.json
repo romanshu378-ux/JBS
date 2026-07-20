@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Backend API for Janki Ballabh Services",
   "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -25,3 +28,4 @@
     "nodemon": "^3.1.0"
   }
 }
+
