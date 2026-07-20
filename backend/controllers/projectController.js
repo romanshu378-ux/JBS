@@ -18,7 +18,7 @@ const createProject = async (req, res) => {
     const { title, category, description, client, completionDate } = req.body;
     let image = null;
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     const project = await Project.create({
@@ -44,7 +44,7 @@ const updateProject = async (req, res) => {
     let image = project.image;
 
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     await project.update({

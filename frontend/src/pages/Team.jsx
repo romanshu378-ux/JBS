@@ -114,8 +114,6 @@ const Team = () => {
                 itemScope
                 itemType="https://schema.org/Person"
               >
-                {/* Temporary debug log for the image URL */}
-                {console.log(`Team member ${member.name} image URL:`, getImageUrl(member.image, PLACEHOLDER_IMAGE))}
 
                 <div className="h-80 overflow-hidden relative">
 
@@ -166,11 +164,6 @@ const Team = () => {
                     {member.role}
                   </p>
 
-                  {/* Temporary debug display for image URL */}
-                  <div className="mt-4 p-2 bg-slate-100 text-xs text-slate-500 break-all rounded border border-slate-200">
-                    <span className="font-semibold text-slate-700">Debug URL:</span><br/>
-                    {getImageUrl(member.image, 'placeholder')}
-                  </div>
                 </div>
 
               </article>

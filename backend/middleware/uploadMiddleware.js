@@ -1,74 +1,55 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
-const sharp = require('sharp');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-const uploadPath = path.join(__dirname, '..', 'uploads');
+// ─── Configure Cloudinary ─────────────────────────────────────────────────────
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+// ─── Cloudinary Storage Engine ────────────────────────────────────────────────
+// Files are uploaded directly to Cloudinary — never touch the local disk.
+// req.file.path  → full HTTPS Cloudinary URL (what we store in the DB)
+// req.file.filename → Cloudinary public_id
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder:         'jbs-uploads',        // Cloudinary folder
+    format:         'webp',               // Convert everything to WebP
+    transformation: [{ quality: 'auto', fetch_format: 'auto' }],
+    public_id:      `${Date.now()}-${Math.round(Math.random() * 1e9)}`,
+  }),
+});
 
-const storage = multer.memoryStorage();
-
+// ─── File Type Filter ─────────────────────────────────────────────────────────
 const fileFilter = (req, file, cb) => {
   const allowed = /jpg|jpeg|png|webp/;
-  const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+  const ext  = allowed.test(path.extname(file.originalname).toLowerCase());
   const mime = allowed.test(file.mimetype);
 
   if (ext && mime) {
     cb(null, true);
   } else {
-    cb(new Error('Only Images Allowed'));
+    cb(new Error('Only image files (jpg, jpeg, png, webp) are allowed'));
   }
 };
 
+// ─── Multer Instance ──────────────────────────────────────────────────────────
 const upload = multer({
   storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
   fileFilter,
 });
 
-const processImage = async (req, res, next) => {
-  if (!req.file && (!req.files || Object.keys(req.files).length === 0)) {
-    return next();
-  }
+// ─── processImage — no-op (Cloudinary handles conversion) ────────────────────
+// Kept for API compatibility with existing route definitions.
+const processImage = (req, res, next) => next();
 
-  try {
-    const processSingle = async (file) => {
-      const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.webp`;
-      const filepath = path.join(uploadPath, filename);
-
-      await sharp(file.buffer)
-        .webp({ quality: 80 })
-        .toFile(filepath);
-
-      file.filename = filename;
-      file.path = filepath;
-      file.mimetype = 'image/webp';
-    };
-
-    if (req.file) {
-      await processSingle(req.file);
-    }
-
-    if (req.files) {
-      for (const fieldname in req.files) {
-        for (const file of req.files[fieldname]) {
-          await processSingle(file);
-        }
-      }
-    }
-
-    next();
-  } catch (error) {
-    console.error('Error processing image:', error);
-    next(error);
-  }
-};
-
+// ─── handleUpload ─────────────────────────────────────────────────────────────
+// Wraps a multer middleware call with consistent JSON error responses.
 const handleUpload = (uploadMiddleware) => {
   return (req, res, next) => {
     uploadMiddleware(req, res, function (err) {
@@ -76,16 +57,16 @@ const handleUpload = (uploadMiddleware) => {
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
           return res.status(400).json({
             success: false,
-            message: `Image upload failed. Expected field: ${err.field}`
+            message: `Image upload failed. Unexpected field: ${err.field}`,
           });
         }
         if (err.code === 'LIMIT_FILE_SIZE') {
           return res.status(400).json({
             success: false,
-            message: 'Image upload failed. File size exceeds the 5MB limit.'
+            message: 'Image upload failed. File exceeds the 5 MB limit.',
           });
         }
-        return res.status(400).json({ success: false, message: `Multer Error: ${err.message}` });
+        return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
       } else if (err) {
         return res.status(400).json({ success: false, message: err.message });
       }

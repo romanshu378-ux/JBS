@@ -14,7 +14,7 @@ const createGallery = async (req, res) => {
     const { title, category } = req.body;
     let image = null;
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     if (!image) {
@@ -37,7 +37,7 @@ const updateGallery = async (req, res) => {
     let image = gallery.image;
 
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     await gallery.update({

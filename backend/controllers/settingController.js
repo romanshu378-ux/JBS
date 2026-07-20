@@ -54,10 +54,10 @@ const updateSettings = async (req, res) => {
     // Handle file uploads (logo, favicon) from multipart/form-data
     if (req.files) {
       if (req.files.logo && req.files.logo.length > 0) {
-        updateData.logo = `/uploads/${req.files.logo[0].filename}`;
+        updateData.logo = req.files.logo[0].path; // Cloudinary HTTPS URL
       }
       if (req.files.favicon && req.files.favicon.length > 0) {
-        updateData.favicon_url = `/uploads/${req.files.favicon[0].filename}`;
+        updateData.favicon_url = req.files.favicon[0].path; // Cloudinary HTTPS URL
       }
     }
 

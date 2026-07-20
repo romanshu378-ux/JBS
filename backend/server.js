@@ -1,8 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');
-const fs = require('fs');
 const sequelize = require('./config/database');
 
 // LOAD ENV
@@ -129,27 +127,6 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// ===============================
-// UPLOADS FOLDER SETUP
-// ===============================
-
-const uploadsPath = path.join(__dirname, 'uploads');
-
-// Create uploads folder automatically
-if (!fs.existsSync(uploadsPath)) {
-
-  fs.mkdirSync(uploadsPath, { recursive: true });
-
-}
-
-// Static access with cache-control (1 year for images)
-app.use('/uploads', express.static(uploadsPath, {
-  maxAge: '1y',
-  setHeaders: (res, path) => {
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-  }
-}));
 
 // ===============================
 // ROUTES

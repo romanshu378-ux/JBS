@@ -14,7 +14,7 @@ const createTeamMember = async (req, res) => {
     const { name, role, bio, facebook, twitter, linkedin } = req.body;
     let image = null;
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     const member = await TeamMember.create({
@@ -35,7 +35,7 @@ const updateTeamMember = async (req, res) => {
     let image = member.image;
 
     if (req.file) {
-      image = `/uploads/${req.file.filename}`;
+      image = req.file.path; // Cloudinary HTTPS URL
     }
 
     await member.update({

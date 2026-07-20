@@ -50,7 +50,7 @@ const createService = async (req, res) => {
   try {
     const data = req.body;
     if (req.file) {
-      data.image = `/uploads/${req.file.filename}`;
+      data.image = req.file.path; // Cloudinary HTTPS URL
     }
     const service = await Service.create(data);
     res.status(201).json({ success: true, data: service, imageUrl: data.image || null });
@@ -66,7 +66,7 @@ const updateService = async (req, res) => {
 
     const data = req.body;
     if (req.file) {
-      data.image = `/uploads/${req.file.filename}`;
+      data.image = req.file.path; // Cloudinary HTTPS URL
     }
 
     await service.update(data);
