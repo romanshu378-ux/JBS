@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Save, Globe, Phone, Mail, MapPin, Link2, Image, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Save, Globe, Phone, MapPin, Link2, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import API from '../api/index.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helpers
+// Helpers & Subcomponents
 // ─────────────────────────────────────────────────────────────────────────────
 const EMPTY_FORM = {
   company_name: '',
@@ -29,6 +29,44 @@ const toForm = (data) => {
   }
   return out;
 };
+
+// Moving these OUTSIDE the main component prevents React from treating them
+// as new component types on every render, which fixes the input focus loss bug.
+const Field = ({ label, name, value, onChange, type = 'text', placeholder = '', hint = '' }) => (
+  <div>
+    <label htmlFor={`cm-${name}`} className="block text-sm font-medium text-slate-700 mb-1">
+      {label}
+    </label>
+    <input
+      id={`cm-${name}`}
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue transition-colors"
+    />
+    {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+  </div>
+);
+
+const TextArea = ({ label, name, value, onChange, rows = 3, placeholder = '', hint = '' }) => (
+  <div>
+    <label htmlFor={`cm-${name}`} className="block text-sm font-medium text-slate-700 mb-1">
+      {label}
+    </label>
+    <textarea
+      id={`cm-${name}`}
+      name={name}
+      rows={rows}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue transition-colors resize-none"
+    />
+    {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+  </div>
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Component
@@ -105,43 +143,6 @@ const ContentManagement = () => {
     );
   }
 
-  // ── Field helper ─────────────────────────────────────────────────────────
-  const Field = ({ label, name, type = 'text', placeholder = '', hint = '' }) => (
-    <div>
-      <label htmlFor={`cm-${name}`} className="block text-sm font-medium text-slate-700 mb-1">
-        {label}
-      </label>
-      <input
-        id={`cm-${name}`}
-        type={type}
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue transition-colors"
-      />
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
-    </div>
-  );
-
-  const TextArea = ({ label, name, rows = 3, placeholder = '', hint = '' }) => (
-    <div>
-      <label htmlFor={`cm-${name}`} className="block text-sm font-medium text-slate-700 mb-1">
-        {label}
-      </label>
-      <textarea
-        id={`cm-${name}`}
-        name={name}
-        rows={rows}
-        value={formData[name]}
-        onChange={handleChange}
-        placeholder={placeholder}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-corporateBlue focus:ring-1 focus:ring-corporateBlue transition-colors resize-none"
-      />
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
-    </div>
-  );
-
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 min-h-[600px]">
@@ -197,12 +198,16 @@ const ContentManagement = () => {
             <Field
               label="Hero Heading"
               name="hero_title"
+              value={formData.hero_title}
+              onChange={handleChange}
               placeholder="Building Reliable Infrastructure & Renewable Solutions"
               hint="Main heading displayed on the homepage hero banner."
             />
             <TextArea
               label="Hero Subheading"
               name="hero_subtitle"
+              value={formData.hero_subtitle}
+              onChange={handleChange}
               placeholder="Professional pipeline, construction, solar and industrial services…"
               hint="Supporting text shown below the main heading."
             />
@@ -216,12 +221,16 @@ const ContentManagement = () => {
             <Field
               label="Company Name"
               name="company_name"
+              value={formData.company_name}
+              onChange={handleChange}
               placeholder="Janki Ballabh Services"
               hint="Used in the Navbar, Footer, and About page."
             />
             <TextArea
               label="About / Company Description"
               name="about_description"
+              value={formData.about_description}
+              onChange={handleChange}
               rows={4}
               placeholder="Janki Ballabh Services is a premier industrial infrastructure company…"
               hint="Short paragraph about the company — displayed in the About page and Footer."
@@ -229,6 +238,8 @@ const ContentManagement = () => {
             <Field
               label="Footer Text"
               name="footer_text"
+              value={formData.footer_text}
+              onChange={handleChange}
               placeholder="Building reliable infrastructure & renewable energy solutions…"
               hint="Short tagline displayed in the Footer column."
             />
@@ -246,12 +257,16 @@ const ContentManagement = () => {
               <Field
                 label="Contact Phone"
                 name="phone"
+                value={formData.phone}
+                onChange={handleChange}
                 type="tel"
                 placeholder="+91 9079139959"
               />
               <Field
                 label="Contact Email"
                 name="email"
+                value={formData.email}
+                onChange={handleChange}
                 type="email"
                 placeholder="info@yourcompany.com"
               />
@@ -259,12 +274,16 @@ const ContentManagement = () => {
             <Field
               label="Office Address"
               name="address"
+              value={formData.address}
+              onChange={handleChange}
               placeholder="Plot No. D-32A, Narottampura, Jaipur, Rajasthan – 302026"
               hint="Displayed in the Footer and Contact page."
             />
             <Field
               label="WhatsApp Number"
               name="whatsapp_number"
+              value={formData.whatsapp_number}
+              onChange={handleChange}
               type="tel"
               placeholder="+919079139959"
               hint="Used for the WhatsApp chat button (no spaces or dashes)."
@@ -279,10 +298,10 @@ const ContentManagement = () => {
             Social Media Links
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Facebook URL" name="facebook_link" placeholder="https://facebook.com/yourpage" />
-            <Field label="Instagram URL" name="instagram_link" placeholder="https://instagram.com/yourhandle" />
-            <Field label="LinkedIn URL" name="linkedin_link" placeholder="https://linkedin.com/company/yourcompany" />
-            <Field label="YouTube URL" name="youtube_link" placeholder="https://youtube.com/@yourchannel" />
+            <Field label="Facebook URL" name="facebook_link" value={formData.facebook_link} onChange={handleChange} placeholder="https://facebook.com/yourpage" />
+            <Field label="Instagram URL" name="instagram_link" value={formData.instagram_link} onChange={handleChange} placeholder="https://instagram.com/yourhandle" />
+            <Field label="LinkedIn URL" name="linkedin_link" value={formData.linkedin_link} onChange={handleChange} placeholder="https://linkedin.com/company/yourcompany" />
+            <Field label="YouTube URL" name="youtube_link" value={formData.youtube_link} onChange={handleChange} placeholder="https://youtube.com/@yourchannel" />
           </div>
         </section>
 
@@ -295,6 +314,8 @@ const ContentManagement = () => {
           <TextArea
             label="Google Maps iFrame src URL"
             name="google_map_embed"
+            value={formData.google_map_embed}
+            onChange={handleChange}
             rows={3}
             placeholder="https://www.google.com/maps/embed?pb=..."
             hint="Paste only the src URL from the Google Maps embed code. The iFrame wrapper is added automatically."
