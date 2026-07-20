@@ -297,10 +297,14 @@ const Contact = () => {
 
         {/* ── Google Maps ── */}
         <div className="mt-16 rounded-lg overflow-hidden shadow-sm border border-gray-100 bg-slate-100 flex items-center justify-center" style={{ height: '450px' }}>
-          {settings?.google_map_embed ? (
+          {settings ? (
             <iframe
               title={`${settings?.company_name || SITE.name} office location`}
-              src={settings.google_map_embed}
+              src={
+                settings?.google_map_embed?.includes('/embed')
+                  ? settings.google_map_embed
+                  : "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.2!2d75.7479!3d26.8318!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDQ5JzU0LjUiTiA3NcKwNDQnNTIuNSJF!5e0!3m2!1sen!2sin!4v1690000000000!5m2!1sen!2sin"
+              }
               width="100%"
               height="450"
               style={{ border: 0 }}

@@ -110,10 +110,12 @@ const Team = () => {
 
               <article
                 key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group"
+                className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group flex flex-col"
                 itemScope
                 itemType="https://schema.org/Person"
               >
+                {/* Temporary debug log for the image URL */}
+                {console.log(`Team member ${member.name} image URL:`, getImageUrl(member.image, PLACEHOLDER_IMAGE))}
 
                 <div className="h-80 overflow-hidden relative">
 
@@ -124,7 +126,7 @@ const Team = () => {
                     alt={`${member.name} — ${member.role} at Janki Ballabh Services`}
                     width="400"
                     height="400"
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                    className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                     itemProp="image"
                     onError={(e) => {
                       e.target.src = PLACEHOLDER_IMAGE;
@@ -164,6 +166,11 @@ const Team = () => {
                     {member.role}
                   </p>
 
+                  {/* Temporary debug display for image URL */}
+                  <div className="mt-4 p-2 bg-slate-100 text-xs text-slate-500 break-all rounded border border-slate-200">
+                    <span className="font-semibold text-slate-700">Debug URL:</span><br/>
+                    {getImageUrl(member.image, 'placeholder')}
+                  </div>
                 </div>
 
               </article>
