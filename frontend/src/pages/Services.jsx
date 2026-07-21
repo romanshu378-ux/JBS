@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Factory, Zap, Droplets, HardHat, Building2, Sun, ArrowRight } from 'lucide-react';
-import { cachedGet, getImageUrl, buildCloudinaryUrl } from '../api/index.js';
+import { cachedGet, getImageUrl } from '../api/index.js';
 import SkeletonCard from '../components/SkeletonCard';
 import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
@@ -19,7 +19,7 @@ const iconMap = {
 
 // ─── Individual Service Card ──────────────────────────────────────────────────
 const ServiceCard = memo(({ service }) => {
-  const imageUrl = buildCloudinaryUrl(getImageUrl(service.image, ''), { width: 800 });
+  const imageUrl = getImageUrl(service.image, '');
 
   return (
     <article className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col">
