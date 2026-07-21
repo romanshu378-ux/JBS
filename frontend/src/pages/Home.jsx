@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { cachedGet, getImageUrl } from '../api/index.js';
+import { cachedGet, getImageUrl, buildCloudinaryUrl } from '../api/index.js';
 import SEOHead, { buildBaseSchema } from '../hooks/useSEO.jsx';
 
 // ─── Module-level icon map — JSX objects created once, never recreated ────────
@@ -103,7 +103,10 @@ const HomeProjectCard = memo(({ project }) => (
       <img
         loading="lazy"
         decoding="async"
-        src={getImageUrl(project.image, 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60')}
+        src={buildCloudinaryUrl(
+            getImageUrl(project.image, 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60'),
+            { width: 800 }
+          )}
         alt={`${project.title} — industrial project by Janki Ballabh Services`}
         width="800"
         height="480"
@@ -128,7 +131,7 @@ const HomeGalleryItem = memo(({ item }) => (
     <img
       loading="lazy"
       decoding="async"
-      src={getImageUrl(item.image, '')}
+      src={buildCloudinaryUrl(getImageUrl(item.image, ''), { width: 600 })}
       alt={item.title ? `${item.title} — Janki Ballabh Services work gallery` : 'Industrial work gallery — Janki Ballabh Services'}
       width="600"
       height="400"
@@ -152,7 +155,7 @@ const HomeTestimonialCard = memo(({ testi }) => (
         <img
           loading="lazy"
           decoding="async"
-          src={getImageUrl(testi.image, '')}
+          src={buildCloudinaryUrl(getImageUrl(testi.image, ''), { width: 96 })}
           alt={`${testi.clientName || 'Client'} — testimonial`}
           width="48"
           height="48"

@@ -56,6 +56,29 @@ export const isLegacyUpload = (imagePath) => {
   return p.startsWith('/uploads/') || p.startsWith('uploads/');
 };
 
+// ─── Cloudinary Delivery Optimizer ───────────────────────────────────────────
+/**
+ * Injects Cloudinary delivery parameters (f_auto, q_auto, w_{width}) into a
+ * Cloudinary URL. Non-Cloudinary URLs (Unsplash, data URIs, local paths) are
+ * returned unchanged, so it is safe to wrap every getImageUrl() call with this.
+ *
+ * How it works:
+ *   Input:  https://res.cloudinary.com/cloud/image/upload/v123/photo.jpg
+ *   Output: https://res.cloudinary.com/cloud/image/upload/f_auto,q_auto,w_800/v123/photo.jpg
+ *
+ * @param {string} url           - Resolved image URL (from getImageUrl)
+ * @param {object} [opts]
+ * @param {number} [opts.width=800]      - Target render width in CSS pixels
+ * @param {string} [opts.quality='auto'] - Cloudinary q_ value
+ * @returns {string}
+ */
+export const buildCloudinaryUrl = (url, { width = 800, quality = 'auto' } = {}) => {
+  if (!url || !url.includes('res.cloudinary.com')) return url;
+  // Insert transforms immediately after /upload/ — handles versioned and plain paths.
+  // String.replace (no g flag) replaces only the first match, which is always correct.
+  return url.replace('/upload/', `/upload/f_auto,q_${quality},w_${width}/`);
+};
+
 // ─── In-Memory API Cache ──────────────────────────────────────────────────────
 // Routes that must NEVER be cached (always fresh from DB)
 // NOTE: /settings removed — public settings are safe to cache on the frontend.

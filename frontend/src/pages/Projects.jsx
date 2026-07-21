@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from 'react';
-import { cachedGet, getImageUrl } from '../api/index.js';
+import { cachedGet, getImageUrl, buildCloudinaryUrl } from '../api/index.js';
 import SkeletonCard from '../components/SkeletonCard';
 import { HardHat } from 'lucide-react';
 import SEOHead, { SITE } from '../hooks/useSEO.jsx';
@@ -9,7 +9,7 @@ const PLACEHOLDER_IMAGE =
 
 // ─── Individual Project Card ──────────────────────────────────────────────────
 const ProjectCard = memo(({ project }) => {
-  const imageUrl = getImageUrl(project.image, PLACEHOLDER_IMAGE);
+  const imageUrl = buildCloudinaryUrl(getImageUrl(project.image, PLACEHOLDER_IMAGE), { width: 800 });
 
   return (
     <article className="group relative overflow-hidden rounded-lg shadow-sm cursor-pointer">

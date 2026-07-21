@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { Linkedin, Mail } from 'lucide-react';
-import { cachedGet, getImageUrl } from '../api/index.js';
+import { cachedGet, getImageUrl, buildCloudinaryUrl } from '../api/index.js';
 import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 // Local SVG placeholder — no external request, no tech-stack leak
@@ -18,7 +18,7 @@ const TeamMemberCard = memo(({ member }) => (
       <img
         loading="lazy"
         decoding="async"
-        src={getImageUrl(member.image, PLACEHOLDER_IMAGE)}
+        src={buildCloudinaryUrl(getImageUrl(member.image, PLACEHOLDER_IMAGE), { width: 400 })}
         alt={`${member.name} — ${member.role} at Janki Ballabh Services`}
         width="400"
         height="400"
