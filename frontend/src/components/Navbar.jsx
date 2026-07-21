@@ -93,7 +93,7 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex space-x-8 items-center">
-            {navLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link 
                 key={link.name} 
                 to={link.path}
