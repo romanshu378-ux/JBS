@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
 import { cachedGet } from '../api/index.js';
@@ -113,4 +113,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default memo(Footer);

@@ -1,9 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cachedGet, BASE_URL } from '../api/index.js';
 
+// ─── Module-level constant — never recreated on re-render ────────────────────
+const NAV_LINKS = [
+  { name: 'Home',     path: '/' },
+  { name: 'About',   path: '/about' },
+  { name: 'Services',path: '/services' },
+  { name: 'Projects',path: '/projects' },
+  { name: 'Team',    path: '/team' },
+  { name: 'Contact', path: '/contact' },
+];
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,13 +20,16 @@ const Navbar = () => {
   const [settings, setSettings] = useState(null);
   const location = useLocation();
 
+  // useCallback: stable reference — prevents addEventListener/removeEventListener
+  // from re-registering on every render
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 50);
+  }, []);
+
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [handleScroll]);
 
   useEffect(() => {
     let cancelled = false;
@@ -34,15 +46,13 @@ const Navbar = () => {
     return () => { cancelled = true; };
   }, []);
 
+  const handleMobileMenuToggle = useCallback(() => {
+    setIsMobileMenuOpen((prev) => !prev);
+  }, []);
 
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Services', path: '/services' },
-    { name: 'Projects', path: '/projects' },
-    { name: 'Team', path: '/team' },
-    { name: 'Contact', path: '/contact' },
-  ];
+  const handleMobileMenuClose = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -97,7 +107,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <button className="md:hidden text-corporateBlue p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <button className="md:hidden text-corporateBlue p-2 min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Toggle menu" onClick={handleMobileMenuToggle}>
             {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
           </button>
         </div>
@@ -111,19 +121,19 @@ const Navbar = () => {
             exit={{ opacity: 0, y: -20 }}
             className="fixed inset-0 z-40 bg-white pt-24 px-6 md:hidden flex flex-col h-[100dvh] overflow-y-auto"
           >
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name} 
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
                 to={link.path}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={handleMobileMenuClose}
                 className={`py-4 min-h-[44px] border-b border-gray-100 text-lg font-medium flex items-center ${location.pathname === link.path ? 'text-corporateGold' : 'text-slate-800'}`}
               >
                 {link.name}
               </Link>
             ))}
-            <Link 
-              to="/contact" 
-              onClick={() => setIsMobileMenuOpen(false)}
+            <Link
+              to="/contact"
+              onClick={handleMobileMenuClose}
               className="mt-6 bg-corporateBlue text-center text-white px-6 py-3 min-h-[44px] flex items-center justify-center rounded-sm font-semibold"
             >
               Get Quote
@@ -135,4 +145,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

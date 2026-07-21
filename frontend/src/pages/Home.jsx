@@ -1,26 +1,186 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Factory, Zap, Droplets, HardHat, Building2, Sun, BatteryCharging } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cachedGet, getImageUrl } from '../api/index.js';
-import SEOHead, { buildBaseSchema, SITE } from '../hooks/useSEO.jsx';
+import SEOHead, { buildBaseSchema } from '../hooks/useSEO.jsx';
 
+// ─── Module-level icon map — JSX objects created once, never recreated ────────
 const iconMap = {
-  'Droplets': <Droplets size={32} />,
+  'Droplets':  <Droplets size={32} />,
   'Building2': <Building2 size={32} />,
-  'Zap': <Zap size={32} />,
-  'Sun': <Sun size={32} />,
-  'Factory': <Factory size={32} />,
-  'HardHat': <HardHat size={32} />
+  'Zap':       <Zap size={32} />,
+  'Sun':       <Sun size={32} />,
+  'Factory':   <Factory size={32} />,
+  'HardHat':   <HardHat size={32} />,
 };
 
+// ─── Static data — defined once at module level, never recreated ──────────────
+const PARTNERS = ['L&T India', 'Waaree Renewable Energy', 'Tata Projects', 'Adani Infrastructure'];
+
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What services does Janki Ballabh Services offer?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Janki Ballabh Services offers Solar EPC and Piling, Water Pipeline Laying, Civil Construction, Fiber Maintenance, MMS Structure Work, and AC/DC Electrical work across Rajasthan and India.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Where is Janki Ballabh Services located?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Our head office is at Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura, Jaipur, Rajasthan 302026.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Which industries does Janki Ballabh Services serve?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'We serve Solar & Renewable Energy, Municipal & Water Infrastructure, Telecom & Fiber, Industrial Construction, and Civil Engineering sectors across India.',
+      },
+    },
+  ],
+};
+
+// ─── Memoized Sub-Components ──────────────────────────────────────────────────
+
+const HomeServiceCard = memo(({ service, index }) => (
+  service.featured ? (
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white p-8 rounded-lg shadow-sm border-2 border-corporateGold hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 bg-corporateGold text-corporateBlue text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">Featured</div>
+      <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors" aria-hidden="true">
+        {iconMap[service.icon] || <BatteryCharging size={32} />}
+      </div>
+      <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
+      <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
+      <Link to={`/services/${service.slug}`} aria-label={`Learn more about ${service.title}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
+        Learn More <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
+      </Link>
+    </motion.article>
+  ) : (
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group"
+    >
+      <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors" aria-hidden="true">
+        {iconMap[service.icon] || <HardHat size={32} />}
+      </div>
+      <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
+      <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
+      <Link to={`/services/${service.slug}`} aria-label={`Read more about ${service.title}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
+        Read More <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
+      </Link>
+    </motion.article>
+  )
+));
+HomeServiceCard.displayName = 'HomeServiceCard';
+
+const HomeProjectCard = memo(({ project }) => (
+  <motion.article
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5 }}
+    className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col"
+  >
+    <div className="h-48 overflow-hidden">
+      <img
+        loading="lazy"
+        decoding="async"
+        src={getImageUrl(project.image, 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60')}
+        alt={`${project.title} — industrial project by Janki Ballabh Services`}
+        width="800"
+        height="480"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60'; }}
+      />
+    </div>
+    <div className="p-6 flex-1 flex flex-col">
+      <span className="text-corporateGold text-xs font-bold uppercase tracking-wider mb-2">{project.category}</span>
+      <h3 className="text-xl font-bold text-corporateBlue mb-3">{project.title}</h3>
+      <p className="text-slate-600 mb-6 flex-1 line-clamp-3">{project.description}</p>
+      <Link to="/projects" aria-label={`View ${project.title} project details`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors mt-auto">
+        View Project <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
+      </Link>
+    </div>
+  </motion.article>
+));
+HomeProjectCard.displayName = 'HomeProjectCard';
+
+const HomeGalleryItem = memo(({ item }) => (
+  <div className="group relative overflow-hidden rounded-lg shadow-sm cursor-pointer h-64">
+    <img
+      loading="lazy"
+      decoding="async"
+      src={getImageUrl(item.image, '')}
+      alt={item.title ? `${item.title} — Janki Ballabh Services work gallery` : 'Industrial work gallery — Janki Ballabh Services'}
+      width="600"
+      height="400"
+      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }}
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-corporateBlue/90 via-corporateBlue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+      <span className="text-corporateGold font-semibold text-sm mb-1">{item.category}</span>
+      <h3 className="text-white font-bold text-xl">{item.title}</h3>
+    </div>
+  </div>
+));
+HomeGalleryItem.displayName = 'HomeGalleryItem';
+
+const HomeTestimonialCard = memo(({ testi }) => (
+  <article className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 relative" itemScope itemType="https://schema.org/Review">
+    <div className="text-corporateGold text-4xl font-serif absolute top-4 left-4 opacity-20" aria-hidden="true">&ldquo;</div>
+    <p className="text-slate-600 italic mb-6 relative z-10" itemProp="reviewBody">&ldquo;{testi.content}&rdquo;</p>
+    <div className="flex items-center" itemProp="author" itemScope itemType="https://schema.org/Person">
+      {testi.image ? (
+        <img
+          loading="lazy"
+          decoding="async"
+          src={getImageUrl(testi.image, '')}
+          alt={`${testi.clientName || 'Client'} — testimonial`}
+          width="48"
+          height="48"
+          className="w-12 h-12 rounded-full object-cover mr-4"
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }}
+        />
+      ) : (
+        <div className="w-12 h-12 rounded-full bg-corporateBlue/10 flex items-center justify-center text-corporateBlue font-bold mr-4" aria-hidden="true">
+          {testi.clientName.charAt(0)}
+        </div>
+      )}
+      <div>
+        <h3 className="font-bold text-corporateBlue text-lg" itemProp="name">{testi.clientName}</h3>
+        <p className="text-sm text-slate-500">{testi.role}, {testi.company}</p>
+      </div>
+    </div>
+  </article>
+));
+HomeTestimonialCard.displayName = 'HomeTestimonialCard';
+
+// ─── Home Page ────────────────────────────────────────────────────────────────
 const Home = () => {
-  const [services, setServices] = useState([]);
-  const [projects, setProjects] = useState([]);
-  const [gallery, setGallery] = useState([]);
+  const [services, setServices]         = useState([]);
+  const [projects, setProjects]         = useState([]);
+  const [gallery, setGallery]           = useState([]);
   const [testimonials, setTestimonials] = useState([]);
-  const [settings, setSettings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [settings, setSettings]         = useState(null);
+  const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,7 +192,7 @@ const Home = () => {
           cachedGet('/projects'),
           cachedGet('/gallery'),
           cachedGet('/testimonials'),
-          cachedGet('/settings')
+          cachedGet('/settings'),
         ]);
 
         if (cancelled) return;
@@ -53,39 +213,9 @@ const Home = () => {
     return () => { cancelled = true; };
   }, []);
 
-  const partners = ['L&T India', 'Waaree Renewable Energy', 'Tata Projects', 'Adani Infrastructure'];
-
-  // FAQ structured data for homepage
-  const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: [
-      {
-        '@type': 'Question',
-        name: 'What services does Janki Ballabh Services offer?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Janki Ballabh Services offers Solar EPC and Piling, Water Pipeline Laying, Civil Construction, Fiber Maintenance, MMS Structure Work, and AC/DC Electrical work across Rajasthan and India.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Where is Janki Ballabh Services located?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Our head office is at Plot No. D-32A, Narottampura, Vastu Nagar Phase-3, Bad Ke Balaji, Jaisinghpura, Jaipur, Rajasthan 302026.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'Which industries does Janki Ballabh Services serve?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'We serve Solar & Renewable Energy, Municipal & Water Infrastructure, Telecom & Fiber, Industrial Construction, and Civil Engineering sectors across India.',
-        },
-      },
-    ],
-  };
+  // buildBaseSchema() is pure but allocates new objects — memoize so it only
+  // runs once per mount, not on every state update (settings, loading, etc.)
+  const structuredData = useMemo(() => [...buildBaseSchema(), FAQ_SCHEMA], []);
 
   return (
     <div className="w-full overflow-hidden">
@@ -96,7 +226,7 @@ const Home = () => {
         keywords="Industrial Construction Company Jaipur, Solar EPC Company Rajasthan, Pipeline Contractor Jaipur, Industrial Infrastructure Rajasthan, Fiber Maintenance Company, Electrical Contractor Rajasthan, Civil Construction Jaipur"
         canonicalPath="/"
         breadcrumbs={[{ name: 'Home', path: '/' }]}
-        structuredData={[...buildBaseSchema(), faqSchema]}
+        structuredData={structuredData}
       />
 
       {/* ── Hero Section ── */}
@@ -116,10 +246,10 @@ const Home = () => {
             decoding="async"
           />
         </div>
-        
+
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-3xl">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -137,7 +267,7 @@ const Home = () => {
               <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-2xl leading-relaxed">
                 {settings?.hero_subtitle || 'Janki Ballabh Services delivers EV Fast Charging, Solar Energy, Electrical, Civil, and Turnkey Engineering Solutions with quality, safety, and reliability..'}
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   to="/contact"
@@ -164,7 +294,7 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-widest mb-8">Trusted by Industry Leaders</p>
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-            {partners.map((partner, index) => (
+            {PARTNERS.map((partner, index) => (
               <div key={index} className="text-xl md:text-2xl font-bold font-heading text-corporateBlue flex items-center">
                 <Building2 className="mr-2" aria-hidden="true" /> {partner}
               </div>
@@ -180,47 +310,10 @@ const Home = () => {
             <h2 className="text-3xl md:text-5xl font-heading font-bold text-corporateBlue mb-6">Our Core Services</h2>
             <p className="text-slate-600 text-lg">We provide end-to-end industrial infrastructure solutions across Rajasthan, specializing in renewable energy, civil engineering, pipeline laying, and fiber maintenance.</p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service, index) => (
-              service.featured ? (
-                <motion.article 
-                  key={service.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white p-8 rounded-lg shadow-sm border-2 border-corporateGold hover:shadow-xl transition-all duration-300 group relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 bg-corporateGold text-corporateBlue text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">Featured</div>
-                  <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors" aria-hidden="true">
-                    {iconMap[service.icon] || <BatteryCharging size={32} />}
-                  </div>
-                  <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
-                  <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
-                  <Link to={`/services/${service.slug}`} aria-label={`Learn more about ${service.title}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
-                    Learn More <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
-                  </Link>
-                </motion.article>
-              ) : (
-                <motion.article 
-                  key={service.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group"
-                >
-                  <div className="w-16 h-16 rounded-2xl bg-corporateBlue/5 text-corporateBlue flex items-center justify-center mb-6 group-hover:bg-corporateBlue group-hover:text-corporateGold transition-colors" aria-hidden="true">
-                    {iconMap[service.icon] || <HardHat size={32} />}
-                  </div>
-                  <h3 className="text-xl font-bold mb-4 group-hover:text-corporateGold transition-colors">{service.title}</h3>
-                  <p className="text-slate-600 mb-6">{service.shortDescription || service.description}</p>
-                  <Link to={`/services/${service.slug}`} aria-label={`Read more about ${service.title}`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors">
-                    Read More <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
-                  </Link>
-                </motion.article>
-              )
+              <HomeServiceCard key={service.id || index} service={service} index={index} />
             ))}
           </div>
         </div>
@@ -236,35 +329,7 @@ const Home = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {projects.map((project) => (
-                <motion.article
-                  key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden group hover:shadow-xl transition-all duration-300 flex flex-col"
-                >
-                  <div className="h-48 overflow-hidden">
-                    <img 
-                      loading="lazy"
-                      decoding="async"
-                      src={getImageUrl(project.image, 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60')} 
-                      alt={`${project.title} — industrial project by Janki Ballabh Services`}
-                      width="800"
-                      height="480"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1541888086225-ee1ea39d4fdd?auto=format&fit=crop&w=800&q=60'; }}
-                    />
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col">
-                    <span className="text-corporateGold text-xs font-bold uppercase tracking-wider mb-2">{project.category}</span>
-                    <h3 className="text-xl font-bold text-corporateBlue mb-3">{project.title}</h3>
-                    <p className="text-slate-600 mb-6 flex-1 line-clamp-3">{project.description}</p>
-                    <Link to="/projects" aria-label={`View ${project.title} project details`} className="text-corporateBlue font-semibold flex items-center group-hover:text-corporateGold transition-colors mt-auto">
-                      View Project <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
-                    </Link>
-                  </div>
-                </motion.article>
+                <HomeProjectCard key={project.id} project={project} />
               ))}
             </div>
             <div className="text-center mt-12">
@@ -275,7 +340,7 @@ const Home = () => {
           </div>
         </section>
       )}
-      
+
       {/* ── Gallery ── */}
       {gallery.length > 0 && (
         <section aria-label="Work gallery" className="py-24 bg-white">
@@ -286,22 +351,7 @@ const Home = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gallery.map((item) => (
-                <div key={item.id} className="group relative overflow-hidden rounded-lg shadow-sm cursor-pointer h-64">
-                  <img
-                    loading="lazy"
-                    decoding="async"
-                    src={getImageUrl(item.image, '')}
-                    alt={item.title ? `${item.title} — Janki Ballabh Services work gallery` : 'Industrial work gallery — Janki Ballabh Services'}
-                    width="600"
-                    height="400"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-corporateBlue/90 via-corporateBlue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <span className="text-corporateGold font-semibold text-sm mb-1">{item.category}</span>
-                    <h3 className="text-white font-bold text-xl">{item.title}</h3>
-                  </div>
-                </div>
+                <HomeGalleryItem key={item.id} item={item} />
               ))}
             </div>
           </div>
@@ -318,14 +368,14 @@ const Home = () => {
               <p className="text-gray-300 text-lg mb-8 leading-relaxed">
                 At Janki Ballabh Services, we blend technical expertise with innovative execution. Our commitment to safety, quality, and timely delivery makes us the preferred choice for major infrastructure and solar EPC projects across Rajasthan and India.
               </p>
-              
+
               <ul className="space-y-6" role="list">
                 {[
                   'Proven track record with industry giants like L&T & Waaree',
                   'Uncompromising commitment to safety standards (GST: 08GBBPS0582P1ZY)',
                   'Highly skilled engineering & technical team of 200+ experts',
                   'Timely project execution and delivery across all sectors',
-                  'Advanced machinery and modern construction techniques'
+                  'Advanced machinery and modern construction techniques',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start">
                     <CheckCircle2 className="w-6 h-6 text-corporateGold mr-4 flex-shrink-0 mt-1" aria-hidden="true" />
@@ -355,7 +405,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      
+
       {/* ── Testimonials ── */}
       {testimonials.length > 0 && (
         <section aria-label="Client testimonials" className="py-24 bg-slate-50">
@@ -366,32 +416,7 @@ const Home = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((testi) => (
-                <article key={testi.id} className="bg-white p-8 rounded-lg shadow-sm border border-gray-100 relative" itemScope itemType="https://schema.org/Review">
-                  <div className="text-corporateGold text-4xl font-serif absolute top-4 left-4 opacity-20" aria-hidden="true">&ldquo;</div>
-                  <p className="text-slate-600 italic mb-6 relative z-10" itemProp="reviewBody">&ldquo;{testi.content}&rdquo;</p>
-                  <div className="flex items-center" itemProp="author" itemScope itemType="https://schema.org/Person">
-                    {testi.image ? (
-                      <img
-                        loading="lazy"
-                        decoding="async"
-                        src={getImageUrl(testi.image, '')}
-                        alt={`${testi.clientName || 'Client'} — testimonial`}
-                        width="48"
-                        height="48"
-                        className="w-12 h-12 rounded-full object-cover mr-4"
-                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-corporateBlue/10 flex items-center justify-center text-corporateBlue font-bold mr-4" aria-hidden="true">
-                        {testi.clientName.charAt(0)}
-                      </div>
-                    )}
-                    <div>
-                      <h3 className="font-bold text-corporateBlue text-lg" itemProp="name">{testi.clientName}</h3>
-                      <p className="text-sm text-slate-500">{testi.role}, {testi.company}</p>
-                    </div>
-                  </div>
-                </article>
+                <HomeTestimonialCard key={testi.id} testi={testi} />
               ))}
             </div>
           </div>
@@ -416,9 +441,4 @@ const Home = () => {
   );
 };
 
-export default Home;
-
-
-
-
-
+export default memo(Home);
