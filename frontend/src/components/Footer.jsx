@@ -1,26 +1,29 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
-import API from '../api/index.js';
+import { cachedGet } from '../api/index.js';
 
 const Footer = () => {
   const [settings, setSettings] = useState(null);
   const [services, setServices] = useState([]);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
         const [settingsRes, servicesRes] = await Promise.all([
-          API.get('/settings'),
-          API.get('/services')
+          cachedGet('/settings'),
+          cachedGet('/services'),
         ]);
+        if (cancelled) return;
         setSettings(settingsRes.data.data);
-        setServices(servicesRes.data.data.slice(0, 6)); // limit to 6 services for footer
-      } catch (error) {
-        console.error('Error fetching footer data:', error);
+        setServices(servicesRes.data.data.slice(0, 6));
+      } catch (_err) {
+        // Non-critical — footer falls back to static copy
       }
     };
     fetchData();
+    return () => { cancelled = true; };
   }, []);
 
   return (

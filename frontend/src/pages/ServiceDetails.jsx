@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Zap, Settings, ShieldCheck, Wrench, BatteryCharging, FileText, Banknote, HardHat, Car, Building2, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
-import API, { getImageUrl } from '../api/index.js';
+import { cachedGet, getImageUrl } from '../api/index.js';
 import SEOHead, { SITE } from '../hooks/useSEO.jsx';
 
 const iconMap = {
@@ -30,7 +30,7 @@ const ServiceDetails = () => {
 
     const fetchService = async () => {
       try {
-        const { data } = await API.get(`/services/${slug}`);
+        const { data } = await cachedGet(`/services/${slug}`);
 
         if (cancelled) return;
 

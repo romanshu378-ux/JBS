@@ -58,11 +58,20 @@ export const isLegacyUpload = (imagePath) => {
 
 // ─── In-Memory API Cache ──────────────────────────────────────────────────────
 // Routes that must NEVER be cached (always fresh from DB)
-const NO_CACHE_ROUTES = new Set(['/settings']);
+// NOTE: /settings removed — public settings are safe to cache on the frontend.
+const NO_CACHE_ROUTES = new Set([]);
 
-const CACHE_TTL_MS  = 5 * 60 * 1000; // 5 minutes for most routes
-const CACHE_MAX_SIZE = 50;            // max entries before evicting oldest
-const cache = new Map();              // key: url, value: { response, expiresAt }
+// Per-route TTL overrides (milliseconds). Falls back to CACHE_TTL_MS.
+const ROUTE_TTL_MS = {
+  '/settings':     60 * 1000, //  60 s — contact info, hero text, social links
+  '/services':     60 * 1000, //  60 s — service list
+  '/projects':     60 * 1000, //  60 s — project gallery
+  '/team':         60 * 1000, //  60 s — team members
+};
+
+const CACHE_TTL_MS  = 60 * 1000; // 60 seconds default for all cached routes
+const CACHE_MAX_SIZE = 50;        // max entries before evicting oldest
+const cache = new Map();          // key: url, value: { response, expiresAt }
 
 /**
  * Cached GET request. Returns cached response when available and fresh.
@@ -74,7 +83,7 @@ const cache = new Map();              // key: url, value: { response, expiresAt 
  * @returns {Promise<{ data: any }>}
  */
 export const cachedGet = async (url, config = {}) => {
-  // Settings must always be fresh — admin changes must appear immediately
+  // Hard bypass for routes that must always be fresh
   if (NO_CACHE_ROUTES.has(url)) {
     return API.get(url, config);
   }
@@ -88,13 +97,16 @@ export const cachedGet = async (url, config = {}) => {
 
   const response = await API.get(url, config);
 
+  // Resolve TTL: prefer per-route override, fall back to global default
+  const ttl = ROUTE_TTL_MS[url] ?? CACHE_TTL_MS;
+
   // Evict oldest entry if cache is at capacity
   if (cache.size >= CACHE_MAX_SIZE) {
     const oldestKey = cache.keys().next().value;
     cache.delete(oldestKey);
   }
 
-  cache.set(url, { response, expiresAt: now + CACHE_TTL_MS });
+  cache.set(url, { response, expiresAt: now + ttl });
   return response;
 };
 
